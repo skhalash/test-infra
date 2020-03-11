@@ -969,7 +969,7 @@ periodics:
       volumes:
         - name: sa-stability-fluentd-storage-writer
           secret:
-            secretName: sa-stability-fluentd-storage-writer
+            secretName: upgrade-sa-stability-fluentd-s
       containers:
         - <<: *base_image
           securityContext:
@@ -1039,7 +1039,7 @@ periodics:
       volumes:
         - name: sa-stability-fluentd-storage-writer
           secret:
-            secretName: sa-stability-fluentd-storage-writer
+            secretName: upgrade-sa-stability-fluentd-s
       containers:
         - <<: *base_image
           securityContext:
@@ -1110,7 +1110,7 @@ periodics:
       volumes:
         - name: sa-stability-fluentd-storage-writer
           secret:
-            secretName: sa-stability-fluentd-storage-writer
+            secretName: upgrade-sa-stability-fluentd-s
       containers:
         - <<: *base_image
           securityContext:
@@ -1130,7 +1130,7 @@ periodics:
             - name: TEST_RESULT_WINDOW_TIME
               value: "6h"
             - name: STABILITY_SLACK_CLIENT_CHANNEL_ID
-              value: "#c4core-kyma-ci-force"
+              value: "#c4core-prow-alerts"
             - name: GITHUB_TEAMS_WITH_KYMA_ADMINS_RIGHTS
               value: "cluster-access"
             - name: KYMA_ALERTS_SLACK_API_URL
@@ -1139,7 +1139,7 @@ periodics:
                   name: kyma-alerts-slack-api-url
                   key: secret
             - name: KYMA_ALERTS_CHANNEL
-              value: "#c4core-kyma-ci-force"
+              value: "#c4core-prow-alerts"
           command:
             - "bash"
           args:
