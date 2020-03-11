@@ -993,16 +993,16 @@ periodics:
         base_ref: master
     spec:
       volumes:
-        - name: sa-stability-fluentd-storage-writer
+        - name: upgrade-sa-stability-fluentd-s
           secret:
-            secretName: sa-stability-fluentd-storage-writer
+            secretName: upgrade-sa-stability-fluentd-s
       containers:
         - <<: *base_image
           securityContext:
             privileged: true
           volumeMounts:
-            - name: sa-stability-fluentd-storage-writer
-              mountPath: /etc/credentials/sa-stability-fluentd-storage-writer
+            - name: upgrade-sa-stability-fluentd-s
+              mountPath: /etc/credentials/upgrade-sa-stability-fluentd-s
               readOnly: true
           command:
             - "bash"
@@ -1021,7 +1021,7 @@ periodics:
             - name: TEST_RESULT_WINDOW_TIME
               value: "6h"
             - name: STABILITY_SLACK_CLIENT_CHANNEL_ID
-              value: "#c4core-kyma-ci-force"
+              value: "#c4core-prow-alerts"
             - name: GITHUB_TEAMS_WITH_KYMA_ADMINS_RIGHTS
               value: "cluster-access"
             - name: KYMA_ALERTS_SLACK_API_URL
@@ -1030,7 +1030,7 @@ periodics:
                   name: kyma-alerts-slack-api-url
                   key: secret
             - name: KYMA_ALERTS_CHANNEL
-              value: "#c4core-kyma-ci-force"
+              value: "#c4core-prow-alerts"
             - name: CLOUDSDK_COMPUTE_ZONE
               value: "europe-west4-b"
           args:
@@ -1063,16 +1063,16 @@ periodics:
         base_ref: master
     spec:
       volumes:
-        - name: sa-stability-fluentd-storage-writer
+        - name: upgrade-sa-stability-fluentd-s
           secret:
-            secretName: sa-stability-fluentd-storage-writer
+            secretName: upgrade-sa-stability-fluentd-s
       containers:
         - <<: *base_image
           securityContext:
             privileged: true
           volumeMounts:
-            - name: sa-stability-fluentd-storage-writer
-              mountPath: /etc/credentials/sa-stability-fluentd-storage-writer
+            - name: upgrade-sa-stability-fluentd-s
+              mountPath: /etc/credentials/upgrade-sa-stability-fluentd-s
               readOnly: true
           command:
             - "bash"
@@ -1091,7 +1091,7 @@ periodics:
             - name: TEST_RESULT_WINDOW_TIME
               value: "24h"
             - name: STABILITY_SLACK_CLIENT_CHANNEL_ID
-              value: "#c4core-kyma-ci-force"
+              value: "#c4core-prow-alerts"
             - name: GITHUB_TEAMS_WITH_KYMA_ADMINS_RIGHTS
               value: "cluster-access"
             - name: KYMA_ALERTS_SLACK_API_URL
@@ -1100,7 +1100,7 @@ periodics:
                   name: kyma-alerts-slack-api-url
                   key: secret
             - name: KYMA_ALERTS_CHANNEL
-              value: "#c4core-kyma-ci-force"
+              value: "#c4core-prow-alerts"
             - name: CLOUDSDK_COMPUTE_ZONE
               value: "europe-west4-b"
           args:
@@ -1134,16 +1134,16 @@ periodics:
         base_ref: master
     spec:
       volumes:
-        - name: sa-stability-fluentd-storage-writer
+        - name: upgrade-sa-stability-fluentd-s
           secret:
-            secretName: sa-stability-fluentd-storage-writer
+            secretName: upgrade-sa-stability-fluentd-s
       containers:
         - <<: *base_image
           securityContext:
             privileged: true
           volumeMounts:
-            - name: sa-stability-fluentd-storage-writer
-              mountPath: /etc/credentials/sa-stability-fluentd-storage-writer
+            - name: upgrade-sa-stability-fluentd-s
+              mountPath: /etc/credentials/upgrade-sa-stability-fluentd-s
               readOnly: true
           env:
             - <<: *cluster_version_k15
@@ -1165,7 +1165,7 @@ periodics:
                   name: kyma-alerts-slack-api-url
                   key: secret
             - name: KYMA_ALERTS_CHANNEL
-              value: "#c4core-kyma-ci-force"
+              value: "#c4core-prow-alerts"
           command:
             - "bash"
           args:
