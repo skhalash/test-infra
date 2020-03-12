@@ -331,6 +331,7 @@ gke_job_labels_template: &gke_job_labels_template
   preset-docker-push-repository-gke-integration: "true"
   preset-dind-enabled: "true"
   preset-kyma-artifacts-bucket: "true"
+  preset-kyma-secrets-bucket: "true"
   preset-cluster-use-ssd: "true"
 
 gke_backup_job_labels_template: &gke_backup_job_labels_template
