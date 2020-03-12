@@ -18,11 +18,11 @@ presets:
     env:
       - name: CLOUDSDK_CORE_PROJECT
         value: "sap-kyma-neighbors-dev"
-  #- labels:
-  #    preset-kms-gc-project-env: "true"
-  #  env:
-  #    - name: CLOUDSDK_KMS_PROJECT
-  #      value: "sap-kyma-prow" # _upgrade_ provide test value
+  - labels:
+      preset-kms-gc-project-env: "true"
+    env:
+      - name: CLOUDSDK_KMS_PROJECT
+        value: "sap-kyma-neighbors-dev" # _upgrade_ provide test value
   - labels:
       preset-sa-vm-kyma-integration: "true" # Service account with "Compute Admin" and "Compute OS Admin Login" roles
     env:
@@ -401,7 +401,7 @@ presets:
       preset-kyma-keyring: "true"
     env:
       - name: KYMA_KEYRING
-        value: "kyma-prow"
+        value: "kyma-dev-keyring"
   - labels:
       preset-kyma-development-artifacts-bucket: "true"
     env:
@@ -411,7 +411,7 @@ presets:
       preset-kyma-encryption-key: "true"
     env:
       - name: KYMA_ENCRYPTION_KEY
-        value: kyma-prow-encryption
+        value: kyma-dev-key
   - labels:
       preset-kyma-slack-channel: "true"
     env:
