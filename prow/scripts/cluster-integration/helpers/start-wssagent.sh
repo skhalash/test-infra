@@ -11,6 +11,7 @@
 # - PROJECTNAME - Kyma component name, scans that directory and posts the results in whitesource
 # - GITHUB_ORG_DIR - Project directory to scan
 # - SCAN_LANGUAGE - Scan language is used to set the correct values in the whitesource config for golang / javascript
+# - KYMA_SECRETS_BUCKET - bucket address for storing encrypted secrets eg. gs://kyma-prow-secrets
 
 set -o errexit
 
@@ -34,8 +35,8 @@ init
 
 export TEST_INFRA_CLUSTER_INTEGRATION_SCRIPTS="${TEST_INFRA_SOURCES_DIR}/prow/scripts/cluster-integration/helpers"
 
-gsutil cp "gs://kyma-prow-secrets/whitesource-userkey.encrypted" "." 
-gsutil cp "gs://kyma-prow-secrets/whitesource-apikey.encrypted" "." 
+gsutil cp "${KYMA_SECRETS_BUCKET}/whitesource-userkey.encrypted" "."
+gsutil cp "${KYMA_SECRETS_BUCKET}/whitesource-apikey.encrypted" "."
 
 "${TEST_INFRA_CLUSTER_INTEGRATION_SCRIPTS}/decrypt.sh" "whitesource-userkey" "whitesource-userkey.encrypted"
 USERKEY=$(cat "whitesource-userkey")
