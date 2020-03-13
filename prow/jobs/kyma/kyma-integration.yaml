@@ -3,12 +3,12 @@
 test_infra_ref: &test_infra_ref
   org: kyma-test-infra-dev
   repo: test-infra
-  path_alias: github.com/kyma-test-infra-dev/test-infra
+  path_alias: github.com/kyma-project/test-infra
 
 kyma_ref: &kyma_ref
   org: kyma-test-infra-dev
   repo: kyma
-  path_alias: github.com/kyma-test-infra-dev/kyma
+  path_alias: github.com/kyma-project/kyma
 
 # Kubectl 1.14
 base_image_k14: &base_image_k14
@@ -138,7 +138,7 @@ gke_minio_gateway_migration_job_template: &gke_minio_gateway_migration_job_templ
 gke_job_template: &gke_job_template
   skip_report: false
   decorate: true
-  path_alias: github.com/kyma-test-infra-dev/kyma
+  path_alias: github.com/kyma-project/kyma
   max_concurrency: 10
   spec:
     containers:
@@ -488,7 +488,7 @@ presubmits: # runs on PRs
       extra_refs:
         - org: kyma-test-infra-dev
           repo: test-infra
-          path_alias: github.com/kyma-test-infra-dev/test-infra
+          path_alias: github.com/kyma-project/test-infra
           base_ref: release-1.8
 
     - name: pre-master-kyma-gke-upgrade
@@ -989,7 +989,7 @@ periodics:
       - org: kyma-test-infra-dev
         repo: test-infra
         base_ref: master
-        path_alias: github.com/kyma-test-infra-dev/test-infra
+        path_alias: github.com/kyma-project/test-infra
       - <<: *kyma_ref
         base_ref: master
     spec:
@@ -1003,7 +1003,7 @@ periodics:
             privileged: true
           volumeMounts:
             - name: upgrade-sa-stability-fluentd-s
-              mountPath: /etc/credentials/upgrade-sa-stability-fluentd-s
+              mountPath: /etc/credentials/sa-stability-fluentd-storage-writer
               readOnly: true
           command:
             - "bash"
@@ -1073,7 +1073,7 @@ periodics:
             privileged: true
           volumeMounts:
             - name: upgrade-sa-stability-fluentd-s
-              mountPath: /etc/credentials/upgrade-sa-stability-fluentd-s
+              mountPath: /etc/credentials/sa-stability-fluentd-storage-writer
               readOnly: true
           command:
             - "bash"
@@ -1144,7 +1144,7 @@ periodics:
             privileged: true
           volumeMounts:
             - name: upgrade-sa-stability-fluentd-s
-              mountPath: /etc/credentials/upgrade-sa-stability-fluentd-s
+              mountPath: /etc/credentials/sa-stability-fluentd-storage-writer
               readOnly: true
           env:
             - <<: *cluster_version_k15
@@ -1187,7 +1187,7 @@ periodics:
       - org: kyma-test-infra-dev
         repo: test-infra
         base_ref: master
-        path_alias: github.com/kyma-test-infra-dev/test-infra
+        path_alias: github.com/kyma-project/test-infra
       - <<: *kyma_ref
         base_ref: master
     spec:

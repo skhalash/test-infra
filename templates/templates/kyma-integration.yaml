@@ -1,12 +1,12 @@
 test_infra_ref: &test_infra_ref
   org: kyma-test-infra-dev
   repo: test-infra
-  path_alias: github.com/kyma-test-infra-dev/test-infra
+  path_alias: github.com/kyma-project/test-infra
 
 kyma_ref: &kyma_ref
   org: kyma-test-infra-dev
   repo: kyma
-  path_alias: github.com/kyma-test-infra-dev/kyma
+  path_alias: github.com/kyma-project/kyma
 
 # Kubectl 1.14
 base_image_k14: &base_image_k14
@@ -963,7 +963,7 @@ periodics:
       - org: kyma-test-infra-dev
         repo: test-infra
         base_ref: master
-        path_alias: github.com/kyma-test-infra-dev/test-infra
+        path_alias: github.com/kyma-project/test-infra
       - <<: *kyma_ref
         base_ref: master
     spec:
@@ -1109,7 +1109,7 @@ periodics:
         base_ref: master
     spec:
       volumes:
-        - name: sa-stability-fluentd-storage-writer
+        - name: upgrade-sa-stability-fluentd-s
           secret:
             secretName: upgrade-sa-stability-fluentd-s
       containers:
@@ -1117,7 +1117,7 @@ periodics:
           securityContext:
             privileged: true
           volumeMounts:
-            - name: sa-stability-fluentd-storage-writer
+            - name: upgrade-sa-stability-fluentd-s
               mountPath: /etc/credentials/sa-stability-fluentd-storage-writer
               readOnly: true
           env:
@@ -1161,7 +1161,7 @@ periodics:
       - org: kyma-test-infra-dev
         repo: test-infra
         base_ref: master
-        path_alias: github.com/kyma-test-infra-dev/test-infra
+        path_alias: github.com/kyma-project/test-infra
       - <<: *kyma_ref
         base_ref: master
     spec:
