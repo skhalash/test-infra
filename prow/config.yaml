@@ -43,6 +43,8 @@ presets:
         value: /etc/credentials/upgrade-sa-gke-kyma-integratio/service-account.json
       - name: CLOUDSDK_DNS_ZONE_NAME
         value: "prow-dev" #GCloud DNS Zone Name (NOT it's DNS name!)
+      - name: KYMA_PROW_DNS_NAME
+        value: "a.build.kyma-project.io."
       - name: KYMA_PROJECT_DIR
         value: "/home/prow/go/src/github.com/kyma-project"
     volumes:
