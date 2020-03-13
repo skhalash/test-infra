@@ -406,7 +406,7 @@ presets:
       preset-kyma-keyring: "true"
     env:
       - name: KYMA_KEYRING
-        value: "kyma-dev-keyring"
+        value: "prow-dev-keyring"
   - labels:
       preset-kyma-development-artifacts-bucket: "true"
     env:
@@ -416,7 +416,7 @@ presets:
       preset-kyma-encryption-key: "true"
     env:
       - name: KYMA_ENCRYPTION_KEY
-        value: kyma-dev-key
+        value: prow-dev-key
   - labels:
       preset-kyma-slack-channel: "true"
     env:
