@@ -15,6 +15,7 @@ periodics:
         preset-kyma-encryption-key: "true"
         preset-kms-gc-project-env: "true"
         preset-gc-project-env: "true"
+        preset-kyma-secrets-bucket: "true"
         preset-sa-gke-kyma-integration-{{ .project }}-whitesource: "true"
     extra_refs:
         - <<: *test_infra_ref

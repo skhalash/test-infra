@@ -8,19 +8,19 @@
 # - TEST_INFRA_CLUSTER_INTEGRATION_SCRIPTS: absolute path for test-infra/prow/scripts/cluster-integration/helpers directory
 # - CLOUDSDK_COMPUTE_REGION: region where the GKE cluster is e.g. europe-west1-b
 # - CLOUDSDK_DNS_ZONE_NAME: dns zone
+# - KYMA_DNS_NAME: dns name [with dot at the end]
 #
 #Permissions: In order to run this script you need to use a service account with "Compute Admin,DNS Administrator, Kubernetes Engine Admin, Kubernetes Engine Cluster Admin, Service Account User, Storage Admin" role
 
 # shellcheck disable=SC1090
 source "${TEST_INFRA_SOURCES_DIR}/prow/scripts/library.sh"
-DNS_NAME="a.build.kyma-project.io."
 
 function cleanup() {
 	
 	shout "Running cleanup-cluster process"
 	discoverUnsetVar=false
 
-	for var in CLUSTER_NAME TEST_INFRA_SOURCES_DIR TEST_INFRA_CLUSTER_INTEGRATION_SCRIPTS CLOUDSDK_COMPUTE_REGION CLOUDSDK_DNS_ZONE_NAME; do
+	for var in CLUSTER_NAME TEST_INFRA_SOURCES_DIR TEST_INFRA_CLUSTER_INTEGRATION_SCRIPTS CLOUDSDK_COMPUTE_REGION CLOUDSDK_DNS_ZONE_NAME KYMA_DNS_NAME; do
 		if [ -z "${!var}" ] ; then
 			echo "ERROR: $var is not set"
 			discoverUnsetVar=true
@@ -103,7 +103,7 @@ function removeResources() {
 
 		shout "Delete Cluster DNS Record"
 		date
-		GATEWAY_DNS_FULL_NAME="*.${CLUSTER_NAME}.${DNS_NAME}"
+		GATEWAY_DNS_FULL_NAME="*.${CLUSTER_NAME}.${KYMA_DNS_NAME}"
 		# Get cluster IP address from DNS record.
 		GATEWAY_IP_ADDRESS=$(gcloud dns record-sets list --zone "${CLOUDSDK_DNS_ZONE_NAME}" --name "${GATEWAY_DNS_FULL_NAME}" --format "value(rrdatas[0])")
 
@@ -120,7 +120,7 @@ function removeResources() {
 
 		shout "Delete Apiserver DNS Record"
 		date
-		APISERVER_DNS_FULL_NAME="apiserver.${CLUSTER_NAME}.${DNS_NAME}"
+		APISERVER_DNS_FULL_NAME="apiserver.${CLUSTER_NAME}.${KYMA_DNS_NAME}"
 		# Get apiserver IP address from DNS record.
 		APISERVER_IP_ADDRESS=$(gcloud dns record-sets list --zone "${CLOUDSDK_DNS_ZONE_NAME}" --name "${APISERVER_DNS_FULL_NAME}" --format="value(rrdatas[0])")
 
