@@ -3,9 +3,9 @@
 test_infra_ref: &test_infra_ref
   org: kyma-test-infra-dev
   repo: test-infra
-  path_alias: github.com/kyma-project/test-infra
+  path_alias: github.com/kyma-test-infra-dev/test-infra
 
-kyma_ref: &kyma_ref
+kyma_ref-dev: &kyma_ref
   org: kyma-test-infra-dev
   repo: kyma
   path_alias: github.com/kyma-project/kyma
@@ -341,7 +341,7 @@ gke_backup_job_labels_template: &gke_backup_job_labels_template
   <<: *gke_job_labels_template
 
 presubmits: # runs on PRs
-  kyma-project/kyma:
+  kyma-test-infra-dev/kyma:
     - name: pre-master-kyma-integration
       branches:
         - ^master$
@@ -444,7 +444,8 @@ presubmits: # runs on PRs
         - ^master$
       <<: *gke_job_template
       # following regexp won't start build if only Markdown files were changed
-      run_if_changed: "^((resources\\S+|installation\\S+)(\\.[^.][^.][^.]+$|\\.[^.][^dD]$|\\.[^mM][^.]$|\\.[^.]$|/[^.]+$))"
+      #run_if_changed: "^((resources\\S+|installation\\S+)(\\.[^.][^.][^.]+$|\\.[^.][^dD]$|\\.[^mM][^.]$|\\.[^.]$|/[^.]+$))"
+      always_run: true
       labels:
         preset-build-pr: "true"
         <<: *gke_job_labels_template
@@ -989,9 +990,11 @@ periodics:
       - org: kyma-test-infra-dev
         repo: test-infra
         base_ref: master
-        path_alias: github.com/kyma-project/test-infra
-      - <<: *kyma_ref
+        path_alias: github.com/kyma-test-infra-dev/test-infra
+      - org: kyma-test-infra-dev
+        repo: kyma
         base_ref: master
+        path_alias: github.com/kyma-project/kyma
     spec:
       volumes:
         - name: upgrade-sa-stability-fluentd-s
@@ -1113,7 +1116,7 @@ periodics:
               cpu: 80m
 
   - name: kyma-aks-nightly
-    cron: "0 4 * * 1-5" # "At 04:00 on every day-of-week from Monday through Friday"
+    cron: "0 1 * * 1-5" # "At 04:00 on every day-of-week from Monday through Friday"
     annotations:
       testgrid-dashboards: kyma-nightly
       # testgrid-alert-email: email-here@sap.com
