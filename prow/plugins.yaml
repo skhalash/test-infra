@@ -1,11 +1,8 @@
 plugins:
-  kyma-project:
+  kyma-test-infra-dev:
     - cat
     - trigger
-  kyma-incubator:
-    - cat
-    - trigger
-  kyma-project/test-infra:
+  kyma-test-infra-dev/test-infra:
     - config-updater
 
 config_updater:
@@ -21,8 +18,7 @@ config_updater:
 
 triggers:
 - repos:
-  - kyma-project
-  - kyma-incubator
-  trusted_org: kyma-project
+  - kyma-test-infra-dev
+  trusted_org: kyma-test-infra-dev
   only_org_members: true
   ignore_ok_to_test: true

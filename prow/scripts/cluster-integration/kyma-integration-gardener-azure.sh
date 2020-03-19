@@ -68,14 +68,17 @@ source "${TEST_INFRA_SOURCES_DIR}/prow/scripts/cluster-integration/helpers/kyma-
 cleanup() {
     #!!! Must be at the beginning of this function !!!
     EXIT_STATUS=$?
+    #Turn off exit-on-error so that next step is executed even if previous one fails.
+    set +e
+
+    if [[ -n "${SUITE_NAME}" ]]; then
+        testSummary
+    fi 
 
     if [ "${ERROR_LOGGING_GUARD}" = "true" ]; then
         shout "AN ERROR OCCURED! Take a look at preceding log entries."
         echo
     fi
-
-    #Turn off exit-on-error so that next step is executed even if previous one fails.
-    set +e
 
     if [ -n "${CLEANUP_CLUSTER}" ]; then
         shout "Deprovision cluster: \"${CLUSTER_NAME}\""
@@ -106,13 +109,40 @@ cleanup() {
     exit "${EXIT_STATUS}"
 }
 
+testSummary() {
+    echo "Test Summary"
+    kyma test status "${SUITE_NAME}" -owide
+
+    statusSucceeded=$(kubectl get cts "${SUITE_NAME}" -ojsonpath="{.status.conditions[?(@.type=='Succeeded')]}")
+    if [[ "${statusSucceeded}" != *"True"* ]]; then
+        echo "- Fetching logs due to test suite failure"
+
+        echo "- Fetching logs from testing pods in Failed status..."
+        kyma test logs "${SUITE_NAME}" --test-status Failed
+
+        echo "- Fetching logs from testing pods in Unknown status..."
+        kyma test logs "${SUITE_NAME}" --test-status Unknown
+
+        echo "- Fetching logs from testing pods in Running status due to running afer test suite timeout..."
+        kyma test logs "${SUITE_NAME}" --test-status Running
+
+        echo "ClusterTestSuite details"
+        kubectl get cts "${SUITE_NAME}" -oyaml
+
+        exit 1
+    fi
+
+    echo "ClusterTestSuite details"
+    kubectl get cts "${SUITE_NAME}" -oyaml
+}
+
 trap cleanup EXIT INT
 
-RANDOM_NAME_SUFFIX=$(LC_ALL=C tr -dc 'a-z0-9' < /dev/urandom | head -c6)
+RANDOM_NAME_SUFFIX=$(LC_ALL=C tr -dc 'a-z0-9' < /dev/urandom | head -c4)
 readonly COMMON_NAME_PREFIX="grdnr"
-COMMON_NAME=$(echo "${COMMON_NAME_PREFIX}-${RANDOM_NAME_SUFFIX}" | tr "[:upper:]" "[:lower:]")
+COMMON_NAME=$(echo "${COMMON_NAME_PREFIX}${RANDOM_NAME_SUFFIX}" | tr "[:upper:]" "[:lower:]")
 
-### Cluster name must be less than 20 characters!
+### Cluster name must be less than 10 characters!
 export CLUSTER_NAME="${COMMON_NAME}"
 
 # Local variables
@@ -146,7 +176,7 @@ shout "Installing Kyma"
 date
 
 shout "Downloading Kyma installer CR"
-curl -L --silent --fail --show-error "https://raw.githubusercontent.com/kyma-project/kyma/master/installation/resources/installer-cr-gardener-azure.yaml.tpl" \
+curl -L --silent --fail --show-error "https://raw.githubusercontent.com/kyma-project/kyma/master/installation/resources/installer-cr-azure-eventhubs.yaml.tpl" \
     --output installer-cr-gardener-azure.yaml.tpl
 
 echo "Downlading production profile"
@@ -193,31 +223,6 @@ kyma test run \
     --watch \
     --non-interactive
 )
-
-echo "Test Summary"
-kyma test status "${SUITE_NAME}" -owide
-
-statusSucceeded=$(kubectl get cts "${SUITE_NAME}" -ojsonpath="{.status.conditions[?(@.type=='Succeeded')]}")
-if [[ "${statusSucceeded}" != *"True"* ]]; then
-    echo "- Fetching logs due to test suite failure"
-
-    echo "- Fetching logs from testing pods in Failed status..."
-    kyma test logs "${SUITE_NAME}" --test-status Failed
-
-    echo "- Fetching logs from testing pods in Unknown status..."
-    kyma test logs "${SUITE_NAME}" --test-status Unknown
-
-    echo "- Fetching logs from testing pods in Running status due to running afer test suite timeout..."
-    kyma test logs "${SUITE_NAME}" --test-status Running
-
-    echo "ClusterTestSuite details"
-    kubectl get cts "${SUITE_NAME}" -oyaml
-
-    exit 1
-fi
-
-echo "ClusterTestSuite details"
-kubectl get cts "${SUITE_NAME}" -oyaml
 
 shout "Success"
 

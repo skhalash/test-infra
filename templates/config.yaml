@@ -8,6 +8,10 @@ global:
     - name: "kyma"
       language: "golang"
       project: "kyma-project"
+    - name: "kyma"
+      language: "golang-mod"
+      project: "kyma-project"
+      custom_projectname: "kyma-mod"
     - name: "console"
       language: "javascript"
       project: "kyma-project"
@@ -275,6 +279,12 @@ templates:
           path: components/director
           since: "1.7"
           optional: false
+      - to: ../prow/jobs/incubator/compass/components/mock-external-test-component/mock-external-test-component-generic.yaml
+        values:
+          <<: *compass_generic_component
+          path: components/mock-external-test-component
+          since: "1.11"
+          optional: true
       - to: ../prow/jobs/incubator/compass/components/connectivity-adapter/connectivity-adapter-generic.yaml
         values:
           <<: *compass_generic_component
@@ -339,7 +349,6 @@ templates:
           <<: *compass_generic_component
           path: tests/e2e/provisioning
           since: "1.10"
-          optional: true
       - to: ../prow/jobs/incubator/compass/tests/connectivity-adapter/connectivity-adapter-tests-generic.yaml
         values:
           <<: *compass_generic_component

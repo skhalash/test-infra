@@ -36,6 +36,8 @@ periodics:
           env:
             - name : PROJECTNAME
               value: kyma
+            - name: CUSTOM_PROJECTNAME
+              value: 
             - name: DRYRUN
               value: "false"
             - name: SCAN_LANGUAGE
@@ -112,6 +114,8 @@ periodics:
           env:
             - name : PROJECTNAME
               value: console
+            - name: CUSTOM_PROJECTNAME
+              value: 
             - name: DRYRUN
               value: "false"
             - name: SCAN_LANGUAGE
@@ -149,6 +153,8 @@ periodics:
           env:
             - name : PROJECTNAME
               value: cli
+            - name: CUSTOM_PROJECTNAME
+              value: 
             - name: DRYRUN
               value: "false"
             - name: SCAN_LANGUAGE
@@ -186,6 +192,8 @@ periodics:
           env:
             - name : PROJECTNAME
               value: helm-broker
+            - name: CUSTOM_PROJECTNAME
+              value: 
             - name: DRYRUN
               value: "false"
             - name: SCAN_LANGUAGE
@@ -223,6 +231,8 @@ periodics:
           env:
             - name : PROJECTNAME
               value: rafter
+            - name: CUSTOM_PROJECTNAME
+              value: 
             - name: DRYRUN
               value: "false"
             - name: SCAN_LANGUAGE
@@ -260,6 +270,8 @@ periodics:
           env:
             - name : PROJECTNAME
               value: compass
+            - name: CUSTOM_PROJECTNAME
+              value: 
             - name: DRYRUN
               value: "false"
             - name: SCAN_LANGUAGE
@@ -297,6 +309,8 @@ periodics:
           env:
             - name : PROJECTNAME
               value: knative-kafka
+            - name: CUSTOM_PROJECTNAME
+              value: 
             - name: DRYRUN
               value: "false"
             - name: SCAN_LANGUAGE
@@ -334,6 +348,8 @@ periodics:
           env:
             - name : PROJECTNAME
               value: api-gateway
+            - name: CUSTOM_PROJECTNAME
+              value: 
             - name: DRYRUN
               value: "false"
             - name: SCAN_LANGUAGE
@@ -371,6 +387,8 @@ periodics:
           env:
             - name : PROJECTNAME
               value: dex
+            - name: CUSTOM_PROJECTNAME
+              value: 
             - name: DRYRUN
               value: "false"
             - name: SCAN_LANGUAGE
