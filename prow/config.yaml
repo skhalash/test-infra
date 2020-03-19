@@ -133,7 +133,7 @@ presets:
           key: subscription-tenant
   - labels:
       preset-dind-enabled: "true"
-    envpreset-kyma-keyring:
+    env:
       - name: DOCKER_IN_DOCKER_ENABLED
         value: "true"
     volumes:
