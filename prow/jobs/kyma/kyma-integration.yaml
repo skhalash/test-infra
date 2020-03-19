@@ -1116,7 +1116,7 @@ periodics:
               cpu: 80m
 
   - name: kyma-aks-nightly
-    cron: "0 1 * * 1-5" # "At 04:00 on every day-of-week from Monday through Friday"
+    cron: "0 */2 * * 1-5" # "At 04:00 on every day-of-week from Monday through Friday"
     annotations:
       testgrid-dashboards: kyma-nightly
       # testgrid-alert-email: email-here@sap.com
