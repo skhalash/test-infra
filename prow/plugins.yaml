@@ -1,3 +1,4 @@
+---
 plugins:
   kyma-test-infra-dev:
     - cat
