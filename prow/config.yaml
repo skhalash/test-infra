@@ -637,8 +637,8 @@ deck:
       - "junit"
   branding:
     header_color: "#0b74de" # Kyma color
-    logo: "extensions/logo.svg"
-    favicon: "extensions/favicon.png"
+    logo: "extensions/sasiedzi_logo.png"
+    favicon: "extensions/sasiedzi_favicon.png"
 
 sinker:
   max_pod_age: 5h
