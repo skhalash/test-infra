@@ -156,12 +156,12 @@ presets:
       preset-docker-push-repository-gke-integration: "true" # Needed for kyma installer image
     env:
       - name: DOCKER_PUSH_REPOSITORY
-        value: "eu.gcr.io/sap-kyma-prow"
+        value: "eu.gcr.io/sap-kyma-neighbors-dev"
   - labels:
       preset-docker-push-repository-test-infra: "true"
     env:
       - name: DOCKER_PUSH_REPOSITORY
-        value: "eu.gcr.io/kyma-project/test-infra"
+        value: "eu.gcr.io/sap-kyma-neighbors-dev/test-infra"
   - labels:
       preset-docker-push-repository-incubator: "true"
     env:
