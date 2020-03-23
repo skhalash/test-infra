@@ -23,7 +23,7 @@ spec:
           image: k8s.gcr.io/gcsweb:v1.1.0
           args:
             - -upgrade-proxied-http-to-https
-            - -b=kyma-prow-logs
+            - -b=upgrade-prow-logs
             - -p=8080
           ports:
             - containerPort: 8080
