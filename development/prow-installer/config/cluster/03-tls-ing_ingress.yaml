@@ -4,21 +4,22 @@
 apiVersion: extensions/v1beta1
 kind: Ingress
 metadata:
-  name: tls-ing
+  #name: tls-ing
+  name: ing
   annotations:
-    kubernetes.io/ingress.global-static-ip-name: kyma-prow-status
-    kubernetes.io/tls-acme: "true"
-    certmanager.k8s.io/cluster-issuer: letsencrypt-prod
-    certmanager.k8s.io/acme-http01-edit-in-place: "true"
+    kubernetes.io/ingress.global-static-ip-name: dev-kyma-prow-status
+    #kubernetes.io/tls-acme: "true"
+    #certmanager.k8s.io/cluster-issuer: letsencrypt-prod
+    #certmanager.k8s.io/acme-http01-edit-in-place: "true"
     kubernetes.io/ingress.class: "gce"
 spec:
-  tls:
-    - secretName: prow-tls
-      hosts:
-        - status.build.kyma-project.io
-        - gcsweb.build.kyma-project.io
+  #tls:
+  #  - secretName: prow-tls
+  #    hosts:
+  #      - status.build.kyma-project.io
+  #      - gcsweb.build.kyma-project.io
   rules:
-    - host: status.build.kyma-project.io
+    - host: status-dev.prow.build.kyma-project.io
       http:
         paths:
           - path: /*
