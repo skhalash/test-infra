@@ -143,7 +143,9 @@ spec:
           imagePullPolicy: Always
           args:
             - --dry-run=false
+            - --config-path=/etc/config/config.yaml
             - --job-config-path=/etc/job-config
+            - --plugin-config=/etc/plugins/plugins.yaml
             - --github-endpoint=http://ghproxy
             - --github-endpoint=https://api.github.com
           ports:
@@ -216,8 +218,9 @@ spec:
           image: gcr.io/k8s-prow/plank:v20200319-1aea24112
           args:
             - --dry-run=false
+            - --config-path=/etc/config/config.yaml
             - --job-config-path=/etc/job-config
-            - --build-cluster=/etc/cluster/cluster.yaml
+            #- --build-cluster=/etc/cluster/cluster.yaml
             - --github-endpoint=http://ghproxy
             - --github-endpoint=https://api.github.com
           volumeMounts:
@@ -261,8 +264,9 @@ spec:
           image: gcr.io/k8s-prow/sinker:v20200319-1aea24112
           args:
             - --job-config-path=/etc/job-config
-            - --build-cluster=/etc/cluster/cluster.yaml
+            #- --build-cluster=/etc/cluster/cluster.yaml
             - --dry-run=false
+            - --config-path=/etc/config/config.yaml
           volumeMounts:
             - name: config
               mountPath: /etc/config
@@ -303,6 +307,7 @@ spec:
         - name: deck
           image: gcr.io/k8s-prow/deck:v20200319-1aea24112
           args:
+            - --config-path=/etc/config/config.yaml
             - --hook-url=http://hook:8888/plugin-help
             - --job-config-path=/etc/job-config
             - --spyglass
@@ -372,6 +377,7 @@ spec:
         - name: horologium
           image: gcr.io/k8s-prow/horologium:v20200319-1aea24112
           args:
+            - --config-path=/etc/config/config.yaml
             - --job-config-path=/etc/job-config
             - --dry-run=false
           volumeMounts:
