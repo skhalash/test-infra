@@ -20,6 +20,6 @@ config_updater:
 triggers:
 - repos:
   - kyma-test-infra-dev
-  trusted_org: kyma-test-infra-dev
+  #trusted_org: kyma-test-infra-dev
   only_org_members: true
   ignore_ok_to_test: true
