@@ -648,8 +648,8 @@ deck:
           - artifacts/junit.*\.xml
   branding:
     header_color: "#0b74de" # Kyma color
-    logo: "extensions/sasiedzi_logo.png"
-    favicon: "extensions/sasiedzi_favicon.png"
+    logo: "/static/extensions/sasiedzi_logo.png"
+    favicon: "/static/extensions/sasiedzi_favicon.png"
 
 sinker:
   max_pod_age: 5h
