@@ -30,7 +30,7 @@ spec:
             backend:
               serviceName: hook
               servicePort: 8888
-    - host: gcsweb.build.kyma-project.io
+    - host: gcsweb-dev.prow.build.kyma-project.io
       http:
         paths:
           - path: /*
