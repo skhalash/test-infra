@@ -1,7 +1,7 @@
 # Test Infra
 [![FOSSA Status](https://app.fossa.io/api/projects/git%2Bgithub.com%2Fkyma-project%2Ftest-infra.svg?type=shield)](https://app.fossa.io/projects/git%2Bgithub.com%2Fkyma-project%2Ftest-infra?ref=badge_shield)
 
-
+[![test_badge](http://status-dev.prow.build.kyma-project.io//badge.svg?jobs=premaster-kyma-gke-integration)]
 ## Overview
 
 The purpose of the `test-infra` repository is to store configuration and scripts for the test infrastructure used in the `kyma-project` organization.

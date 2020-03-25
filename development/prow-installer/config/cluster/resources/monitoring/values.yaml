@@ -1,0 +1,2 @@
+grafana:
+  provisionDashboards: true
