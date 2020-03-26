@@ -1,7 +1,4 @@
-# Source: kubernetes/test-infra/prow/cluster/pushgateway_deployment.yaml
-# Removed pushgateway-proxy as we don't use it
-
-apiVersion: extensions/v1beta1
+apiVersion: apps/v1
 kind: Deployment
 metadata:
   namespace: default
@@ -10,6 +7,9 @@ metadata:
     app: pushgateway
 spec:
   replicas: 1
+  selector:
+    matchLabels:
+      app: pushgateway
   template:
     metadata:
       labels:
