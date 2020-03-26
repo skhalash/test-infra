@@ -6,28 +6,28 @@
 # - add get verb for configmaps resource in hook role
 ###
 ---
-apiVersion: v1
-kind: ConfigMap
-metadata:
-  namespace: default
-  name: plugins
-data:
-  plugins.yaml: ""
----
-apiVersion: v1
-kind: ConfigMap
-metadata:
-  namespace: default
-  name: config
-data:
-  config.yaml: ""
----
-apiVersion: v1
-kind: ConfigMap
-metadata:
-  namespace: default
-  name: job-config
----
+#apiVersion: v1
+#kind: ConfigMap
+#metadata:
+#  namespace: default
+#  name: plugins
+#data:
+#  plugins.yaml: ""
+#---
+#apiVersion: v1
+#kind: ConfigMap
+#metadata:
+#  namespace: default
+#  name: config
+#data:
+#  config.yaml: ""
+#---
+#apiVersion: v1
+#kind: ConfigMap
+#metadata:
+#  namespace: default
+#  name: job-config
+#---
 apiVersion: apiextensions.k8s.io/v1beta1
 kind: CustomResourceDefinition
 metadata:
@@ -51,21 +51,21 @@ spec:
             type:
               type: string
               enum:
-                - "presubmit"
-                - "postsubmit"
-                - "periodic"
-                - "batch"
+              - "presubmit"
+              - "postsubmit"
+              - "periodic"
+              - "batch"
         status:
           properties:
             state:
               type: string
               enum:
-                - "triggered"
-                - "pending"
-                - "success"
-                - "failure"
-                - "aborted"
-                - "error"
+              - "triggered"
+              - "pending"
+              - "success"
+              - "failure"
+              - "aborted"
+              - "error"
           anyOf:
           - not:
               properties:
@@ -116,7 +116,7 @@ spec:
     type: string
     JSONPath: .status.state
 ---
-apiVersion: extensions/v1beta1
+apiVersion: apps/v1
 kind: Deployment
 metadata:
   namespace: default
@@ -130,6 +130,9 @@ spec:
     rollingUpdate:
       maxSurge: 1
       maxUnavailable: 1
+  selector:
+    matchLabels:
+      app: hook
   template:
     metadata:
       labels:
@@ -167,6 +170,19 @@ spec:
             - name: job-config
               mountPath: /etc/job-config
               readOnly: true
+          livenessProbe:
+            httpGet:
+              path: /healthz
+              port: 8081
+            initialDelaySeconds: 3
+            periodSeconds: 3
+          readinessProbe:
+            httpGet:
+              path: /healthz/ready
+              port: 8081
+            initialDelaySeconds: 10
+            periodSeconds: 3
+            timeoutSeconds: 600
       volumes:
         - name: hmac
           secret:
@@ -196,7 +212,7 @@ spec:
     - port: 8888
   type: NodePort
 ---
-apiVersion: extensions/v1beta1
+apiVersion: apps/v1
 kind: Deployment
 metadata:
   namespace: default
@@ -204,6 +220,9 @@ metadata:
   labels:
     app: plank
 spec:
+  selector:
+    matchLabels:
+      app: plank
   replicas: 1 # Do not scale up.
   strategy:
     type: Recreate
@@ -244,7 +263,7 @@ spec:
           configMap:
             name: job-config
 ---
-apiVersion: extensions/v1beta1
+apiVersion: apps/v1
 kind: Deployment
 metadata:
   namespace: default
@@ -252,6 +271,9 @@ metadata:
   labels:
     app: sinker
 spec:
+  selector:
+    matchLabels:
+      app: sinker
   replicas: 1
   template:
     metadata:
@@ -282,7 +304,7 @@ spec:
           configMap:
             name: job-config
 ---
-apiVersion: extensions/v1beta1
+apiVersion: apps/v1
 kind: Deployment
 metadata:
   namespace: default
@@ -296,6 +318,9 @@ spec:
     rollingUpdate:
       maxSurge: 1
       maxUnavailable: 1
+  selector:
+    matchLabels:
+      app: deck
   template:
     metadata:
       labels:
@@ -310,6 +335,8 @@ spec:
             - --config-path=/etc/config/config.yaml
             - --hook-url=http://hook:8888/plugin-help
             - --job-config-path=/etc/job-config
+            - --plugin-config=/etc/plugins/plugins.yaml
+            - --github-token-path=/etc/github/oauth
             - --spyglass
           ports:
             - name: http
@@ -320,6 +347,12 @@ spec:
               readOnly: true
             - name: job-config
               mountPath: /etc/job-config
+              readOnly: true
+            - name: oauth
+              mountPath: /etc/github
+              readOnly: true
+            - name: plugins
+              mountPath: /etc/plugins
               readOnly: true
           livenessProbe:
             httpGet:
@@ -341,6 +374,12 @@ spec:
         - name: job-config
           configMap:
             name: job-config
+        - name: oauth
+          secret:
+            secretName: oauth-token
+        - name: plugins
+          configMap:
+            name: plugins
 ---
 apiVersion: v1
 kind: Service
@@ -351,11 +390,11 @@ spec:
   selector:
     app: deck
   ports:
-    - port: 80
-      targetPort: 8080
+  - port: 80
+    targetPort: 8080
   type: NodePort
 ---
-apiVersion: extensions/v1beta1
+apiVersion: apps/v1
 kind: Deployment
 metadata:
   namespace: default
@@ -366,6 +405,9 @@ spec:
   replicas: 1 # Do not scale up.
   strategy:
     type: Recreate
+  selector:
+    matchLabels:
+      app: horologium
   template:
     metadata:
       labels:
@@ -432,8 +474,8 @@ roleRef:
   kind: Role
   name: "deck"
 subjects:
-  - kind: ServiceAccount
-    name: "deck"
+- kind: ServiceAccount
+  name: "deck"
 ---
 kind: Role
 apiVersion: rbac.authorization.k8s.io/v1beta1
@@ -454,6 +496,7 @@ rules:
     verbs:
       - get
       - list
+      - watch
 ---
 kind: ServiceAccount
 apiVersion: v1
@@ -485,8 +528,8 @@ roleRef:
   kind: Role
   name: "horologium"
 subjects:
-  - kind: ServiceAccount
-    name: "horologium"
+- kind: ServiceAccount
+  name: "horologium"
 ---
 kind: ServiceAccount
 apiVersion: v1
@@ -517,6 +560,7 @@ rules:
       - create
       - list
       - update
+      - patch
 ---
 kind: RoleBinding
 apiVersion: rbac.authorization.k8s.io/v1beta1
@@ -528,8 +572,8 @@ roleRef:
   kind: Role
   name: "plank"
 subjects:
-  - kind: ServiceAccount
-    name: "plank"
+- kind: ServiceAccount
+  name: "plank"
 ---
 kind: ServiceAccount
 apiVersion: v1
@@ -557,6 +601,24 @@ rules:
     verbs:
       - delete
       - list
+      - watch
+      - get
+  - apiGroups:
+      - ""
+    resources:
+      - configmaps
+    resourceNames:
+      - prow-sinker-leaderlock
+    verbs:
+      - get
+      - update
+  - apiGroups:
+      - ""
+    resources:
+      - configmaps
+      - events
+    verbs:
+      - create
 ---
 kind: RoleBinding
 apiVersion: rbac.authorization.k8s.io/v1beta1
@@ -568,8 +630,8 @@ roleRef:
   kind: Role
   name: "sinker"
 subjects:
-  - kind: ServiceAccount
-    name: "sinker"
+- kind: ServiceAccount
+  name: "sinker"
 ---
 apiVersion: v1
 kind: ServiceAccount
@@ -595,6 +657,7 @@ rules:
     resources:
       - configmaps
     verbs:
+      - create
       - update
       - get
 ---
@@ -608,5 +671,5 @@ roleRef:
   kind: Role
   name: "hook"
 subjects:
-  - kind: ServiceAccount
-    name: "hook"
+- kind: ServiceAccount
+  name: "hook"

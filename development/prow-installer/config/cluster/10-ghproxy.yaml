@@ -15,7 +15,7 @@ spec:
       storage: 100Gi
   storageClassName: gce-ssd-retain
 ---
-apiVersion: extensions/v1beta1
+apiVersion: apps/v1
 kind: Deployment
 metadata:
   namespace: default
@@ -23,7 +23,10 @@ metadata:
   labels:
     app: ghproxy
 spec:
-  replicas: 1 
+  selector:
+    matchLabels:
+      app: ghproxy
+  replicas: 1  # TODO(fejta): this should be HA
   template:
     metadata:
       labels:
@@ -56,8 +59,12 @@ metadata:
   name: ghproxy
 spec:
   ports:
-  - port: 80
+  - name: main
+    port: 80
     protocol: TCP
     targetPort: 8888
+  - name: metrics
+    port: 9090
   selector:
     app: ghproxy
+  type: ClusterIP

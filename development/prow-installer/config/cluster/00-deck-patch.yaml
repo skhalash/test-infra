@@ -5,12 +5,15 @@ spec:
       containers:
       - name: deck
         args:
-        - --tide-url=http://tide/
+        - --config-path=/etc/config/config.yaml
+        #- --tide-url=http://tide/
         - --hook-url=http://hook:8888/plugin-help
         - --job-config-path=/etc/job-config
         - --spyglass
-        - --redirect-http-to=status.build.kyma-project.io
-        - --build-cluster=/etc/cluster/cluster.yaml
+        - --plugin-config=/etc/plugins/plugins.yaml
+        - --github-token-path=/etc/github/oauth
+        #- --redirect-http-to=status.build.kyma-project.io
+        #- --build-cluster=/etc/cluster/cluster.yaml
         volumeMounts:
         - mountPath: /static/extensions
           name: branding
