@@ -653,7 +653,7 @@ deck:
           - artifacts/junit.*\.xml
   branding:
     #TODO: revert header color and align file names in prod
-    header_color: "FE0800" # status dev color
+    header_color: "#FE0800" # status dev color
     logo: "/static/extensions/sasiedzi_logo.png"
     favicon: "/static/extensions/sasiedzi_favicon.png"
 
