@@ -29,7 +29,7 @@ required = [
   version = "0.8.0"
 
 [[constraint]]
-  revision = "b9a576b397892c55487e495721d23b3a52ac9472"
+  revision = "fbc86f22b087a29d1dcf1f695bf367bbbe73e262"
   name = "k8s.io/test-infra"
 
 [[constraint]]
