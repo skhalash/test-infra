@@ -334,14 +334,16 @@ spec:
         - name: deck
           image: gcr.io/k8s-prow/deck:v20200319-1aea24112
           args:
-            - --config-path=/etc/config/config.yaml
             - --hook-url=http://hook:8888/plugin-help
+            - --config-path=/etc/config/config.yaml
             - --job-config-path=/etc/job-config
             - --plugin-config=/etc/plugins/plugins.yaml
-            - --github-token-path=/etc/github/oauth
             - --spyglass=true
             - --github-endpoint=http://ghproxy
             - --github-endpoint=https://api.github.com
+            - --github-token-path=/etc/github/oauth
+            - --gcs-credentials-file=/etc/gcs-credentials/service-account.json
+            #TODO: uncomment in prod
             #- --build-cluster=/etc/cluster/cluster.yaml
           ports:
             - name: http
@@ -361,6 +363,9 @@ spec:
               readOnly: true
             - name: branding
               mountPath: /static/extensions
+              readOnly: true
+            - mountPath: /etc/gcs-credentials
+              name: gcs-credentials
               readOnly: true
           livenessProbe:
             httpGet:
@@ -392,6 +397,11 @@ spec:
           configMap:
             defaultMode: 420
             name: branding
+        - name: gcs-creds
+          secret:
+            defaultMode: 420
+            #TODO: aligne to prod secret name
+            secretName: upgrade-sa-gcs-plank
 ---
 apiVersion: v1
 kind: Service
