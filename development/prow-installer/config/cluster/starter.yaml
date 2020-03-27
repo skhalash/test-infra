@@ -151,6 +151,7 @@ spec:
             - --plugin-config=/etc/plugins/plugins.yaml
             - --github-endpoint=http://ghproxy
             - --github-endpoint=https://api.github.com
+            - --github-token-path=/etc/github/oauth
           ports:
             - name: http
               containerPort: 8888
@@ -242,6 +243,7 @@ spec:
             #- --build-cluster=/etc/cluster/cluster.yaml
             - --github-endpoint=http://ghproxy
             - --github-endpoint=https://api.github.com
+            - --github-token-path=/etc/github/oauth
           volumeMounts:
             - name: oauth
               mountPath: /etc/github
@@ -252,6 +254,9 @@ spec:
             - name: job-config
               mountPath: /etc/job-config
               readOnly: true
+            #- mountPath: /static/extensions
+            #  name: branding
+            #  readOnly: true
       volumes:
         - name: oauth
           secret:
@@ -262,6 +267,10 @@ spec:
         - name: job-config
           configMap:
             name: job-config
+        #- name: branding
+        #  configMap:
+        #    defaultMode: 420
+        #    name: branding
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -337,7 +346,9 @@ spec:
             - --job-config-path=/etc/job-config
             - --plugin-config=/etc/plugins/plugins.yaml
             - --github-token-path=/etc/github/oauth
-            - --spyglass
+            - --spyglass=true
+            - --github-endpoint=http://ghproxy
+            - --github-endpoint=https://api.github.com
           ports:
             - name: http
               containerPort: 8080
@@ -353,6 +364,9 @@ spec:
               readOnly: true
             - name: plugins
               mountPath: /etc/plugins
+              readOnly: true
+            - name: branding
+              mountPath: /static/extensions
               readOnly: true
           livenessProbe:
             httpGet:
@@ -380,6 +394,10 @@ spec:
         - name: plugins
           configMap:
             name: plugins
+        - name: branding
+          configMap:
+            defaultMode: 420
+            name: branding
 ---
 apiVersion: v1
 kind: Service
@@ -437,27 +455,27 @@ spec:
           configMap:
             name: job-config
 ---
-apiVersion: extensions/v1beta1
-kind: Ingress
-metadata:
-  namespace: default
-  name: ing
-  annotations:
-    kubernetes.io/ingress.class: nginx
-    nginx.ingress.kubernetes.io/ssl-redirect: "false"
-spec:
-  rules:
-    - http:
-        paths:
-          - path: /
-            backend:
-              serviceName: deck
-              servicePort: 80
-          - path: /hook
-            backend:
-              serviceName: hook
-              servicePort: 8888
----
+#apiVersion: extensions/v1beta1
+#kind: Ingress
+#metadata:
+#  namespace: default
+#  name: ing
+#  annotations:
+#    kubernetes.io/ingress.class: nginx
+#    nginx.ingress.kubernetes.io/ssl-redirect: "false"
+#spec:
+#  rules:
+#    - http:
+#        paths:
+#          - path: /
+#            backend:
+#              serviceName: deck
+#              servicePort: 80
+#          - path: /hook
+#            backend:
+#              serviceName: hook
+#              servicePort: 8888
+#---
 kind: ServiceAccount
 apiVersion: v1
 metadata:

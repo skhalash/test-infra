@@ -632,8 +632,8 @@ deck:
   spyglass:
     size_limit: 500000000 # 500MB
     gcs_browser_prefix: http://gcsweb-dev.prow.build.kyma-project.io/gcs/
-    testgrid_config: gs://k8s-testgrid/config
-    testgrid_root: https://testgrid.k8s.io/
+    #testgrid_config: gs://k8s-testgrid/config
+    #testgrid_root: https://testgrid.k8s.io/
     lenses:
       - lens:
           name: metadata
@@ -648,7 +648,7 @@ deck:
         required_files:
           - artifacts/junit.*\.xml
   branding:
-    header_color: "#0b74de" # Kyma color
+    header_color: "FE0800" # status dev color
     logo: "/static/extensions/sasiedzi_logo.png"
     favicon: "/static/extensions/sasiedzi_favicon.png"
 
