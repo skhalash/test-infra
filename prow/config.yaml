@@ -331,6 +331,11 @@ presets:
       - name: KYMA_SECRETS_BUCKET
         value: gs://upgrade-prow-secrets
   - labels:
+      preset-kyma-secrets-bucket: "true"
+    env:
+      - name: KYMA_SECRETS_BUCKET
+        value: gs://kyma-prow-secrets
+  - labels:
       preset-kyma-cli-stable: "true"
     env:
       - name: KYMA_CLI_STABLE_BUCKET
