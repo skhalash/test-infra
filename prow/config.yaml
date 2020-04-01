@@ -325,16 +325,12 @@ presets:
     env:
       - name: KYMA_ARTIFACTS_BUCKET
         value: gs://upgrade-prow-artifacts
+  # TODO: change it in prod
   - labels:
       preset-kyma-secrets-bucket: "true"
     env:
       - name: KYMA_SECRETS_BUCKET
         value: gs://upgrade-prow-secrets
-  - labels:
-      preset-kyma-secrets-bucket: "true"
-    env:
-      - name: KYMA_SECRETS_BUCKET
-        value: gs://kyma-prow-secrets
   - labels:
       preset-kyma-cli-stable: "true"
     env:
