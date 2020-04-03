@@ -159,6 +159,54 @@ gke_job_template: &gke_job_template
             memory: 200Mi
             cpu: 80m
 
+gke_test_success: &gke_test_success
+  skip_report: false
+  decorate: true
+  path_alias: github.com/kyma-project/kyma
+  max_concurrency: 10
+  spec:
+    containers:
+      - <<: *base_image
+        securityContext:
+          privileged: true
+        command:
+          - "bash"
+        env:
+          - <<: *cluster_version_k15
+          - name: CLOUDSDK_COMPUTE_ZONE
+            value: "europe-west4-b"
+        args:
+          - "-c"
+          - "${KYMA_PROJECT_DIR}/test-infra/prow/scripts/success_test_job.sh"
+        resources:
+          requests:
+            memory: 200Mi
+            cpu: 80m
+
+gke_test_fail: &gke_test_fail
+  skip_report: false
+  decorate: true
+  path_alias: github.com/kyma-project/kyma
+  max_concurrency: 10
+  spec:
+    containers:
+      - <<: *base_image
+        securityContext:
+          privileged: true
+        command:
+          - "bash"
+        env:
+          - <<: *cluster_version_k15
+          - name: CLOUDSDK_COMPUTE_ZONE
+            value: "europe-west4-b"
+        args:
+          - "-c"
+          - "${KYMA_PROJECT_DIR}/test-infra/prow/scripts/fail_test_job.sh"
+        resources:
+          requests:
+            memory: 200Mi
+            cpu: 80m
+            
 gke_job_template_k14: &gke_job_template_k14
   skip_report: false
   decorate: true
@@ -342,6 +390,98 @@ gke_backup_job_labels_template: &gke_backup_job_labels_template
 
 presubmits: # runs on PRs
   kyma-test-infra-dev/kyma:
+    - name: branchprotector-run_always-success
+      branches:
+        - ^master$
+      <<: *gke_test_success
+      always_run: true
+      labels:
+        preset-build-pr: "true"
+        <<: *gke_job_labels_template
+      extra_refs:
+        - <<: *test_infra_ref
+          base_ref: master
+    #- name: branchprotector-run_always-failed
+    #  branches:
+    #    - ^master$
+    #  <<: *gke_test_fail
+    #  always_run: true
+    #  labels:
+    #    preset-build-pr: "true"
+    #    <<: *gke_job_labels_template
+    #  extra_refs:
+    #    - <<: *test_infra_ref
+    #      base_ref: master
+    #- name: branchprotector-run_always-optional-success
+    #  optional: true
+    #  branches:
+    #    - ^master$
+    #  <<: *gke_test_success
+    #  always_run: true
+    #  labels:
+    #    preset-build-pr: "true"
+    #    <<: *gke_job_labels_template
+    #  extra_refs:
+    #    - <<: *test_infra_ref
+    #      base_ref: master
+    - name: branchprotector-run_always-optional-failed
+      optional: true
+      branches:
+        - ^master$
+      <<: *gke_test_fail
+      always_run: true
+      labels:
+        preset-build-pr: "true"
+        <<: *gke_job_labels_template
+      extra_refs:
+        - <<: *test_infra_ref
+          base_ref: master
+    - name: branchprotector-run_if-success
+      branches:
+        - ^master$
+      <<: *gke_test_success
+      run_if_changed: "^((test_success\\S+)(\\.[^.][^.][^.]+$|\\.[^.][^dD]$|\\.[^mM][^.]$|\\.[^.]$|/[^.]+$))"
+      labels:
+        preset-build-pr: "true"
+        <<: *gke_job_labels_template
+      extra_refs:
+        - <<: *test_infra_ref
+          base_ref: master
+    - name: branchprotector-run_if-failed
+      branches:
+        - ^master$
+      <<: *gke_test_fail
+      run_if_changed: "^((test_fail\\S+)(\\.[^.][^.][^.]+$|\\.[^.][^dD]$|\\.[^mM][^.]$|\\.[^.]$|/[^.]+$))"
+      labels:
+        preset-build-pr: "true"
+        <<: *gke_job_labels_template
+      extra_refs:
+        - <<: *test_infra_ref
+          base_ref: master
+    - name: branchprotector-optional-success
+      optional: true
+      branches:
+        - ^master$
+      <<: *gke_test_success
+      run_if_changed: "^((test_success\\S+)(\\.[^.][^.][^.]+$|\\.[^.][^dD]$|\\.[^mM][^.]$|\\.[^.]$|/[^.]+$))"
+      labels:
+        preset-build-pr: "true"
+        <<: *gke_job_labels_template
+      extra_refs:
+        - <<: *test_infra_ref
+          base_ref: master
+    - name: branchprotector-optional-fail
+      optional: true
+      branches:
+        - ^master$
+      <<: *gke_test_fail
+      run_if_changed: "^((test_fail\\S+)(\\.[^.][^.][^.]+$|\\.[^.][^dD]$|\\.[^mM][^.]$|\\.[^.]$|/[^.]+$))"
+      labels:
+        preset-build-pr: "true"
+      <<: *gke_job_labels_template
+      extra_refs:
+        - <<: *test_infra_ref
+          base_ref: master
     - name: pre-master-kyma-integration
       branches:
         - ^master$
