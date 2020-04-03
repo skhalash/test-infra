@@ -458,7 +458,7 @@ presubmits: # runs on PRs
       extra_refs:
         - <<: *test_infra_ref
           base_ref: master
-    - name: branchprotector-optional-success
+    - name: branchprotector-run_if-optional-success
       optional: true
       branches:
         - ^master$
@@ -470,7 +470,7 @@ presubmits: # runs on PRs
       extra_refs:
         - <<: *test_infra_ref
           base_ref: master
-    - name: branchprotector-optional-fail
+    - name: branchprotector-run_if-optional-fail
       optional: true
       branches:
         - ^master$

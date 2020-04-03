@@ -505,6 +505,10 @@ branch-protection:
       protect: true # protect all repos & branches in kyma-project org
       repos:
         kyma:
+          required_status_checks:
+            contexts:
+              - branchprotector-run_if-failed
+              - branchprotector-run_always-failed
           branches:
             release-1.10:
               required_status_checks:
