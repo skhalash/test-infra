@@ -412,18 +412,18 @@ presubmits: # runs on PRs
     #  extra_refs:
     #    - <<: *test_infra_ref
     #      base_ref: master
-    #- name: branchprotector-run_always-optional-success
-    #  optional: true
-    #  branches:
-    #    - ^master$
-    #  <<: *gke_test_success
-    #  always_run: true
-    #  labels:
-    #    preset-build-pr: "true"
-    #    <<: *gke_job_labels_template
-    #  extra_refs:
-    #    - <<: *test_infra_ref
-    #      base_ref: master
+    - name: branchprotector-run_always-optional-success
+      optional: true
+      branches:
+        - ^master$
+      <<: *gke_test_success
+      always_run: true
+      labels:
+        preset-build-pr: "true"
+        <<: *gke_job_labels_template
+      extra_refs:
+        - <<: *test_infra_ref
+          base_ref: master
     - name: branchprotector-run_always-optional-failed
       optional: true
       branches:
