@@ -491,10 +491,10 @@ presets:
 
 branch-protection:
   enforce_admins: false
-  required_pull_request_reviews:
-    dismiss_stale_reviews: false
-    require_code_owner_reviews: true
-    required_approving_review_count: 1
+  #required_pull_request_reviews:
+  #  dismiss_stale_reviews: false
+  #  require_code_owner_reviews: true
+  #  required_approving_review_count: 1
   # all jobs that have ContextRequired() set to true are also treated as required_status_checks, so there is no point to mention it here.
   # TODO: uncomment in prod
   #required_status_checks:
@@ -508,7 +508,7 @@ branch-protection:
           required_status_checks:
             contexts:
               - branchprotector-run_if-failed
-              - branchprotector-run_always-failed
+              #- branchprotector-run_always-failed
           branches:
             release-1.10:
               required_status_checks:
