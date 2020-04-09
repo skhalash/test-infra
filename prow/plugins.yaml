@@ -23,3 +23,4 @@ triggers:
   #trusted_org: kyma-test-infra-dev
   only_org_members: true
   ignore_ok_to_test: true
+  elide_skipped_contexts: false
