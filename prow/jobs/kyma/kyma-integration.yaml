@@ -584,7 +584,8 @@ presubmits: # runs on PRs
         - ^master$
       <<: *gke_job_template
       # following regexp won't start build if only Markdown files were changed
-      run_if_changed: "^((resources\\S+|installation\\S+)(\\.[^.][^.][^.]+$|\\.[^.][^dD]$|\\.[^mM][^.]$|\\.[^.]$|/[^.]+$))"
+      #run_if_changed: "^((resources\\S+|installation\\S+)(\\.[^.][^.][^.]+$|\\.[^.][^dD]$|\\.[^mM][^.]$|\\.[^.]$|/[^.]+$))"
+      run_if_changed: "^((test_success\\S+)(\\.[^.][^.][^.]+$|\\.[^.][^dD]$|\\.[^mM][^.]$|\\.[^.]$|/[^.]+$))"
       labels:
         preset-build-pr: "true"
         <<: *gke_job_labels_template
