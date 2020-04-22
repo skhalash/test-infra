@@ -836,522 +836,522 @@ periodics:
   # kyma-integration-cleaner removes all sshPublic keys stored for service account "sa-vm-kyma-integration". Those keys refers to machines that in most cases were already removed.
   # Purpose of this job is to avoid error: "Login profile size exceeds 32 KiB" when running kyma-integration tests
 
-  - name: utilities-kyma-integration-cleaner
-    cron: "30 * * * *" # "At 30 minutes past every hour"
-    annotations:
-      testgrid-dashboards: kyma-cleaners
-      # testgrid-alert-email: email-here@sap.com
-      testgrid-num-failures-to-alert: '1'
-    labels:
-      preset-sa-vm-kyma-integration: "true"
-      preset-gc-project-env: "true"
-    spec:
-      containers:
-        - image: eu.gcr.io/kyma-project/prow/cleaner:0.0.1 # see test-infra/prow/images/cleaner
-          resources:
-            requests:
-              memory: 100Mi
-              cpu: 50m
-  - name: orphaned-az-storage-accounts-cleaner
-    cron: "00 00 * * *" # "At 00:00 each day"
-    annotations:
-      testgrid-dashboards: kyma-cleaners
-      # testgrid-alert-email: email-here@sap.com
-      testgrid-num-failures-to-alert: '1'
-    labels:
-      preset-creds-aks-kyma-integration: "true"
-    decorate: true
-    extra_refs:
-      - <<: *test_infra_ref
-        base_ref: master
-    spec:
-      containers:
-        - <<: *base_image
-          command:
-            - "bash"
-          args:
-            - "-c"
-            - "prow/scripts/cluster-integration/minio/azure-cleaner.sh"
-          env:
-            - name: MINIO_GATEWAY_MODE
-              value: azure
-            - name: AZURE_RS_GROUP
-              value: rafter-minio-gateway
-            - name: AZURE_REGION
-              value: westeurope
-          resources:
-            requests:
-              memory: 100Mi
-              cpu: 50m
-  # TODO (@michal-hudy): Remove when release 1.8 not supported
-  - name: orphaned-az-storage-accounts-cleaner-old
-    cron: "00 00 * * *" # "At 00:00 each day"
-    annotations:
-      testgrid-dashboards: kyma-cleaners
-      # testgrid-alert-email: email-here@sap.com
-      testgrid-num-failures-to-alert: '1'
-    labels:
-      preset-creds-aks-kyma-integration: "true"
-      preset-minio-az-gateway: "true"
-    decorate: true
-    extra_refs:
-      - <<: *test_infra_ref
-        base_ref: master
-    spec:
-      containers:
-        - <<: *base_image
-          command:
-            - "bash"
-          args:
-            - "-c"
-            - "prow/scripts/cluster-integration/minio/azure-cleaner.sh"
-          resources:
-            requests:
-              memory: 100Mi
-              cpu: 50m
-          env:
-            - <<: *cluster_version
-  - name: orphaned-assetstore-gcp-bucket-cleaner
-    cron: "0 0 1 1 *" # "to disable job execution (once a year)"
-    annotations:
-      testgrid-dashboards: kyma-cleaners
-      # testgrid-alert-email: email-here@sap.com
-      testgrid-num-failures-to-alert: '1'
-    labels:
-      preset-sa-gke-kyma-integration: "true"
-      preset-gc-project-env: "true"
-    decorate: true
-    extra_refs:
-      - <<: *test_infra_ref
-        base_ref: master
-    spec:
-      containers:
-        - image: eu.gcr.io/kyma-project/prow/buildpack-golang:0.0.1
-          command:
-            - "bash"
-          args:
-            - "-c"
-            - "development/assetstore-gcp-bucket-cleaner.sh -project=${CLOUDSDK_CORE_PROJECT}"
-          resources:
-            requests:
-              memory: 1Gi
-              cpu: 400m
-  - name: orphaned-disks-cleaner
-    cron: "30 * * * *" # "At 30 minutes past every hour"
-    annotations:
-      testgrid-dashboards: kyma-cleaners
-      # testgrid-alert-email: email-here@sap.com
-      testgrid-num-failures-to-alert: '1'
-    labels:
-      preset-sa-gke-kyma-integration: "true"
-      preset-gc-project-env: "true"
-    decorate: true
-    extra_refs:
-      - <<: *test_infra_ref
-        base_ref: master
-    spec:
-      containers:
-        - image: eu.gcr.io/kyma-project/prow/buildpack-golang:0.0.1
-          command:
-            - "bash"
-          args:
-            - "-c"
-            - "development/disks-cleanup.sh -project=${CLOUDSDK_CORE_PROJECT} -dryRun=false -diskNameRegex='^gke-gkeint|gke-upgrade|gke-provisioner|gke-backup|weekly|nightly|gke-central|gke-minio|gke-gkecompint|restore|gke-release'"
-          resources:
-            requests:
-              memory: 1Gi
-              cpu: 400m
-  - name: orphaned-clusters-cleaner
-    cron: "0 * * * *" # "At 0 minute every hour"
-    annotations:
-      testgrid-dashboards: kyma-cleaners
-      # testgrid-alert-email: email-here@sap.com
-      testgrid-num-failures-to-alert: '1'
-    labels:
-      preset-sa-gke-kyma-integration: "true"
-      preset-gc-project-env: "true"
-    decorate: true
-    extra_refs:
-      - <<: *test_infra_ref
-        base_ref: master
-    spec:
-      containers:
-        - image: eu.gcr.io/kyma-project/prow/buildpack-golang:0.0.1
-          command:
-            - "bash"
-          args:
-            - "-c"
-            - "development/clusters-cleanup.sh -project=${CLOUDSDK_CORE_PROJECT} -dryRun=false -whitelisted-clusters=kyma-prow,workload-kyma-prow,nightly,weekly"
-          resources:
-            requests:
-              memory: 1Gi
-              cpu: 400m
-  - name: orphaned-vms-cleaner
-    cron: "0 * * * *" # "At minute 0 past every hour"
-    annotations:
-      testgrid-dashboards: kyma-cleaners
-      # testgrid-alert-email: email-here@sap.com
-      testgrid-num-failures-to-alert: '1'
-    labels:
-      preset-sa-gke-kyma-integration: "true"
-      preset-gc-project-env: "true"
-    decorate: true
-    extra_refs:
-      - <<: *test_infra_ref
-        base_ref: master
-    spec:
-      containers:
-        - image: eu.gcr.io/kyma-project/prow/test-infra/buildpack-golang:v20181119-afd3fbd
-          command:
-            - "bash"
-          args:
-            - "-c"
-            - "development/vms-cleanup.sh -project=${CLOUDSDK_CORE_PROJECT} -dryRun=false"
-          resources:
-            requests:
-              memory: 1Gi
-              cpu: 400m
-  - name: orphaned-loadbalancer-cleaner
-    cron: "15 * * * *" # "At 15 past every hour"
-    annotations:
-      testgrid-dashboards: kyma-cleaners
-      # testgrid-alert-email: email-here@sap.com
-      testgrid-num-failures-to-alert: '1'
-    labels:
-      preset-sa-gke-kyma-integration: "true"
-      preset-gc-project-env: "true"
-    decorate: true
-    extra_refs:
-      - <<: *test_infra_ref
-        base_ref: master
-    spec:
-      containers:
-        - image: eu.gcr.io/kyma-project/prow/buildpack-golang:0.0.1
-          command:
-            - "bash"
-          args:
-            - "-c"
-            - "development/loadbalancer-cleanup.sh -project=${CLOUDSDK_CORE_PROJECT} -dryRun=false"
-          resources:
-            requests:
-              memory: 1Gi
-              cpu: 400m
-  - name: firewall-cleaner
-    cron: "45 */4 * * 1-5" # "At minute 45 past every 4th hour from Monday through Friday"
-    annotations:
-      testgrid-dashboards: kyma-cleaners
-      # testgrid-alert-email: email-here@sap.com
-      testgrid-num-failures-to-alert: '1'
-    labels:
-      preset-sa-gke-kyma-integration: "true"
-      preset-gc-project-env: "true"
-    decorate: true
-    extra_refs:
-      - <<: *test_infra_ref
-        base_ref: master
-    spec:
-      containers:
-        - image: eu.gcr.io/kyma-project/prow/test-infra/buildpack-golang:v20181119-afd3fbd
-          command:
-            - "bash"
-          args:
-            - "-c"
-            - "development/firewall-cleanup.sh -project=${CLOUDSDK_CORE_PROJECT} -dryRun=false"
-          resources:
-            requests:
-              memory: 1Gi
-              cpu: 400m
-  - name: orphaned-dns-cleaner
-    cron: "30 * * * *" # "At minute 30 past every hour"
-    annotations:
-      testgrid-dashboards: kyma-cleaners
-      # testgrid-alert-email: email-here@sap.com
-      testgrid-num-failures-to-alert: '1'
-    labels:
-      preset-sa-gke-kyma-integration: "true"
-      preset-gc-project-env: "true"
-      preset-gc-compute-envs: "true"
-    decorate: true
-    extra_refs:
-      - <<: *test_infra_ref
-        base_ref: master
-    spec:
-      containers:
-        - image: eu.gcr.io/kyma-project/prow/test-infra/buildpack-golang:v20181119-afd3fbd
-          command:
-            - "bash"
-          args:
-            - "-c"
-            - "development/dns-cleanup.sh -project=${CLOUDSDK_CORE_PROJECT} -dnsZone=${CLOUDSDK_DNS_ZONE_NAME} -ageInHours=2 -regions=${CLOUDSDK_COMPUTE_REGION} -dryRun=false"
-          resources:
-            requests:
-              memory: 1Gi
-              cpu: 400m
+ # - name: utilities-kyma-integration-cleaner
+ #   cron: "30 * * * *" # "At 30 minutes past every hour"
+ #   annotations:
+ #     testgrid-dashboards: kyma-cleaners
+ #     # testgrid-alert-email: email-here@sap.com
+ #     testgrid-num-failures-to-alert: '1'
+ #   labels:
+ #     preset-sa-vm-kyma-integration: "true"
+ #     preset-gc-project-env: "true"
+ #   spec:
+ #     containers:
+ #       - image: eu.gcr.io/kyma-project/prow/cleaner:0.0.1 # see test-infra/prow/images/cleaner
+ #         resources:
+ #           requests:
+ #             memory: 100Mi
+ #             cpu: 50m
+ # - name: orphaned-az-storage-accounts-cleaner
+ #   cron: "00 00 * * *" # "At 00:00 each day"
+ #   annotations:
+ #     testgrid-dashboards: kyma-cleaners
+ #     # testgrid-alert-email: email-here@sap.com
+ #     testgrid-num-failures-to-alert: '1'
+ #   labels:
+ #     preset-creds-aks-kyma-integration: "true"
+ #   decorate: true
+ #   extra_refs:
+ #     - <<: *test_infra_ref
+ #       base_ref: master
+ #   spec:
+ #     containers:
+ #       - <<: *base_image
+ #         command:
+ #           - "bash"
+ #         args:
+ #           - "-c"
+ #           - "prow/scripts/cluster-integration/minio/azure-cleaner.sh"
+ #         env:
+ #           - name: MINIO_GATEWAY_MODE
+ #             value: azure
+ #           - name: AZURE_RS_GROUP
+ #             value: rafter-minio-gateway
+ #           - name: AZURE_REGION
+ #             value: westeurope
+ #         resources:
+ #           requests:
+ #             memory: 100Mi
+ #             cpu: 50m
+ # # TODO (@michal-hudy): Remove when release 1.8 not supported
+ # - name: orphaned-az-storage-accounts-cleaner-old
+ #   cron: "00 00 * * *" # "At 00:00 each day"
+ #   annotations:
+ #     testgrid-dashboards: kyma-cleaners
+ #     # testgrid-alert-email: email-here@sap.com
+ #     testgrid-num-failures-to-alert: '1'
+ #   labels:
+ #     preset-creds-aks-kyma-integration: "true"
+ #     preset-minio-az-gateway: "true"
+ #   decorate: true
+ #   extra_refs:
+ #     - <<: *test_infra_ref
+ #       base_ref: master
+ #   spec:
+ #     containers:
+ #       - <<: *base_image
+ #         command:
+ #           - "bash"
+ #         args:
+ #           - "-c"
+ #           - "prow/scripts/cluster-integration/minio/azure-cleaner.sh"
+ #         resources:
+ #           requests:
+ #             memory: 100Mi
+ #             cpu: 50m
+ #         env:
+ #           - <<: *cluster_version
+ # - name: orphaned-assetstore-gcp-bucket-cleaner
+ #   cron: "0 0 1 1 *" # "to disable job execution (once a year)"
+ #   annotations:
+ #     testgrid-dashboards: kyma-cleaners
+ #     # testgrid-alert-email: email-here@sap.com
+ #     testgrid-num-failures-to-alert: '1'
+ #   labels:
+ #     preset-sa-gke-kyma-integration: "true"
+ #     preset-gc-project-env: "true"
+ #   decorate: true
+ #   extra_refs:
+ #     - <<: *test_infra_ref
+ #       base_ref: master
+ #   spec:
+ #     containers:
+ #       - image: eu.gcr.io/kyma-project/prow/buildpack-golang:0.0.1
+ #         command:
+ #           - "bash"
+ #         args:
+ #           - "-c"
+ #           - "development/assetstore-gcp-bucket-cleaner.sh -project=${CLOUDSDK_CORE_PROJECT}"
+ #         resources:
+ #           requests:
+ #             memory: 1Gi
+ #             cpu: 400m
+ # - name: orphaned-disks-cleaner
+ #   cron: "30 * * * *" # "At 30 minutes past every hour"
+ #   annotations:
+ #     testgrid-dashboards: kyma-cleaners
+ #     # testgrid-alert-email: email-here@sap.com
+ #     testgrid-num-failures-to-alert: '1'
+ #   labels:
+ #     preset-sa-gke-kyma-integration: "true"
+ #     preset-gc-project-env: "true"
+ #   decorate: true
+ #   extra_refs:
+ #     - <<: *test_infra_ref
+ #       base_ref: master
+ #   spec:
+ #     containers:
+ #       - image: eu.gcr.io/kyma-project/prow/buildpack-golang:0.0.1
+ #         command:
+ #           - "bash"
+ #         args:
+ #           - "-c"
+ #           - "development/disks-cleanup.sh -project=${CLOUDSDK_CORE_PROJECT} -dryRun=false -diskNameRegex='^gke-gkeint|gke-upgrade|gke-provisioner|gke-backup|weekly|nightly|gke-central|gke-minio|gke-gkecompint|restore|gke-release'"
+ #         resources:
+ #           requests:
+ #             memory: 1Gi
+ #             cpu: 400m
+ # - name: orphaned-clusters-cleaner
+ #   cron: "0 * * * *" # "At 0 minute every hour"
+ #   annotations:
+ #     testgrid-dashboards: kyma-cleaners
+ #     # testgrid-alert-email: email-here@sap.com
+ #     testgrid-num-failures-to-alert: '1'
+ #   labels:
+ #     preset-sa-gke-kyma-integration: "true"
+ #     preset-gc-project-env: "true"
+ #   decorate: true
+ #   extra_refs:
+ #     - <<: *test_infra_ref
+ #       base_ref: master
+ #   spec:
+ #     containers:
+ #       - image: eu.gcr.io/kyma-project/prow/buildpack-golang:0.0.1
+ #         command:
+ #           - "bash"
+ #         args:
+ #           - "-c"
+ #           - "development/clusters-cleanup.sh -project=${CLOUDSDK_CORE_PROJECT} -dryRun=false -whitelisted-clusters=kyma-prow,workload-kyma-prow,nightly,weekly"
+ #         resources:
+ #           requests:
+ #             memory: 1Gi
+ #             cpu: 400m
+ # - name: orphaned-vms-cleaner
+ #   cron: "0 * * * *" # "At minute 0 past every hour"
+ #   annotations:
+ #     testgrid-dashboards: kyma-cleaners
+ #     # testgrid-alert-email: email-here@sap.com
+ #     testgrid-num-failures-to-alert: '1'
+ #   labels:
+ #     preset-sa-gke-kyma-integration: "true"
+ #     preset-gc-project-env: "true"
+ #   decorate: true
+ #   extra_refs:
+ #     - <<: *test_infra_ref
+ #       base_ref: master
+ #   spec:
+ #     containers:
+ #       - image: eu.gcr.io/kyma-project/prow/test-infra/buildpack-golang:v20181119-afd3fbd
+ #         command:
+ #           - "bash"
+ #         args:
+ #           - "-c"
+ #           - "development/vms-cleanup.sh -project=${CLOUDSDK_CORE_PROJECT} -dryRun=false"
+ #         resources:
+ #           requests:
+ #             memory: 1Gi
+ #             cpu: 400m
+ # - name: orphaned-loadbalancer-cleaner
+ #   cron: "15 * * * *" # "At 15 past every hour"
+ #   annotations:
+ #     testgrid-dashboards: kyma-cleaners
+ #     # testgrid-alert-email: email-here@sap.com
+ #     testgrid-num-failures-to-alert: '1'
+ #   labels:
+ #     preset-sa-gke-kyma-integration: "true"
+ #     preset-gc-project-env: "true"
+ #   decorate: true
+ #   extra_refs:
+ #     - <<: *test_infra_ref
+ #       base_ref: master
+ #   spec:
+ #     containers:
+ #       - image: eu.gcr.io/kyma-project/prow/buildpack-golang:0.0.1
+ #         command:
+ #           - "bash"
+ #         args:
+ #           - "-c"
+ #           - "development/loadbalancer-cleanup.sh -project=${CLOUDSDK_CORE_PROJECT} -dryRun=false"
+ #         resources:
+ #           requests:
+ #             memory: 1Gi
+ #             cpu: 400m
+ # - name: firewall-cleaner
+ #   cron: "45 */4 * * 1-5" # "At minute 45 past every 4th hour from Monday through Friday"
+ #   annotations:
+ #     testgrid-dashboards: kyma-cleaners
+ #     # testgrid-alert-email: email-here@sap.com
+ #     testgrid-num-failures-to-alert: '1'
+ #   labels:
+ #     preset-sa-gke-kyma-integration: "true"
+ #     preset-gc-project-env: "true"
+ #   decorate: true
+ #   extra_refs:
+ #     - <<: *test_infra_ref
+ #       base_ref: master
+ #   spec:
+ #     containers:
+ #       - image: eu.gcr.io/kyma-project/prow/test-infra/buildpack-golang:v20181119-afd3fbd
+ #         command:
+ #           - "bash"
+ #         args:
+ #           - "-c"
+ #           - "development/firewall-cleanup.sh -project=${CLOUDSDK_CORE_PROJECT} -dryRun=false"
+ #         resources:
+ #           requests:
+ #             memory: 1Gi
+ #             cpu: 400m
+ # - name: orphaned-dns-cleaner
+ #   cron: "30 * * * *" # "At minute 30 past every hour"
+ #   annotations:
+ #     testgrid-dashboards: kyma-cleaners
+ #     # testgrid-alert-email: email-here@sap.com
+ #     testgrid-num-failures-to-alert: '1'
+ #   labels:
+ #     preset-sa-gke-kyma-integration: "true"
+ #     preset-gc-project-env: "true"
+ #     preset-gc-compute-envs: "true"
+ #   decorate: true
+ #   extra_refs:
+ #     - <<: *test_infra_ref
+ #       base_ref: master
+ #   spec:
+ #     containers:
+ #       - image: eu.gcr.io/kyma-project/prow/test-infra/buildpack-golang:v20181119-afd3fbd
+ #         command:
+ #           - "bash"
+ #         args:
+ #           - "-c"
+ #           - "development/dns-cleanup.sh -project=${CLOUDSDK_CORE_PROJECT} -dnsZone=${CLOUDSDK_DNS_ZONE_NAME} -ageInHours=2 -regions=${CLOUDSDK_COMPUTE_REGION} -dryRun=false"
+ #         resources:
+ #           requests:
+ #             memory: 1Gi
+ #             cpu: 400#m
 
-  - name: github-stats
-    cron: "0 6 * * *" # "At 6:00 every day"
-    annotations:
-    labels:
-      preset-bot-github-token: "true"
-    decorate: true
-    extra_refs:
-      - <<: *test_infra_ref
-        base_ref: master
-    spec:
-      containers:
-        - image: eu.gcr.io/kyma-project/prow/test-infra/buildpack-golang:v20181119-afd3fbd
-          command:
-            - "bash"
-          args:
-            - "-c"
-            - "development/github-stats.sh"
-          resources:
-            requests:
-              memory: 1Gi
-              cpu: 400m
+ # - name: github-stats
+ #   cron: "0 6 * * *" # "At 6:00 every day"
+ #   annotations:
+ #   labels:
+ #     preset-bot-github-token: "true"
+ #   decorate: true
+ #   extra_refs:
+ #     - <<: *test_infra_ref
+ #       base_ref: master
+ #   spec:
+ #     containers:
+ #       - image: eu.gcr.io/kyma-project/prow/test-infra/buildpack-golang:v20181119-afd3fbd
+ #         command:
+ #           - "bash"
+ #         args:
+ #           - "-c"
+ #           - "development/github-stats.sh"
+ #         resources:
+ #           requests:
+ #             memory: 1Gi
+ #             cpu: 400#m
+#
 
+ # - name: kyma-gke-nightly
+ #   cron: "0 4 * * 1-5" # "At 04:00 on every weekday Monday through Friday"
+ #   annotations:
+ #     testgrid-dashboards: kyma-nightly
+ #     # testgrid-alert-email: email-here@sap.com
+ #     testgrid-num-failures-to-alert: '1'
+ #   labels:
+ #     preset-kyma-keyring: "true"
+ #     preset-kyma-encryption-key: "true"
+ #     preset-build-master: "true"
+ #     preset-stability-checker-slack-notifications: "true"
+ #     preset-nightly-github-integration: "true"
+ #     preset-kms-gc-project-env: "true"
+ #     <<: *gke_job_labels_template
+ #   decorate: true
+ #   extra_refs:
+ #     - org: kyma-test-infra-dev
+ #       repo: test-infra
+ #       base_ref: master
+ #       path_alias: github.com/kyma-project/test-infra
+ #     - org: kyma-test-infra-dev
+ #       repo: kyma
+ #       base_ref: master
+ #       path_alias: github.com/kyma-project/kyma
+ #   spec:
+ #     volumes:
+ #       - name: upgrade-sa-stability-fluentd-s
+ #         secret:
+ #           secretName: upgrade-sa-stability-fluentd-s
+ #     containers:
+ #       - <<: *base_image
+ #         securityContext:
+ #           privileged: true
+ #         volumeMounts:
+ #           - name: upgrade-sa-stability-fluentd-s
+ #             mountPath: /etc/credentials/sa-stability-fluentd-storage-writer
+ #             readOnly: true
+ #         command:
+ #           - "bash"
+ #         env:
+ #           - <<: *cluster_version_k15
+ #           - name: MACHINE_TYPE
+ #             value: "custom-8-15360"
+ #           - name: PROVISION_REGIONAL_CLUSTER
+ #             value: "true"
+ #           - name: NODES_PER_ZONE
+ #             value: "1"
+ #           - name: STACKDRIVER_COLLECTOR_SIDECAR_IMAGE_TAG
+ #             value: "0.6.4"
+ #           - name: INPUT_CLUSTER_NAME
+ #             value: "nightly"
+ #           - name: TEST_RESULT_WINDOW_TIME
+ #             value: "6h"
+ #           - name: STABILITY_SLACK_CLIENT_CHANNEL_ID
+ #             value: "#c4core-prow-alerts"
+ #           - name: GITHUB_TEAMS_WITH_KYMA_ADMINS_RIGHTS
+ #             value: "cluster-access"
+ #           - name: KYMA_ALERTS_SLACK_API_URL
+ #             valueFrom:
+ #               secretKeyRef:
+ #                 name: kyma-alerts-slack-api-url
+ #                 key: secret
+ #           - name: KYMA_ALERTS_CHANNEL
+ #             value: "#c4core-prow-alerts"
+ #           - name: CLOUDSDK_COMPUTE_ZONE
+ #             value: "europe-west4-b"
+ #         args:
+ #           - "-c"
+ #           - "${KYMA_PROJECT_DIR}/test-infra/prow/scripts/cluster-integration/kyma-gke-long-lasting.sh"
+ #         resources:
+ #           requests:
+ #             memory: 200Mi
+ #             cpu: 80#m
 
-  - name: kyma-gke-nightly
-    cron: "0 4 * * 1-5" # "At 04:00 on every weekday Monday through Friday"
-    annotations:
-      testgrid-dashboards: kyma-nightly
-      # testgrid-alert-email: email-here@sap.com
-      testgrid-num-failures-to-alert: '1'
-    labels:
-      preset-kyma-keyring: "true"
-      preset-kyma-encryption-key: "true"
-      preset-build-master: "true"
-      preset-stability-checker-slack-notifications: "true"
-      preset-nightly-github-integration: "true"
-      preset-kms-gc-project-env: "true"
-      <<: *gke_job_labels_template
-    decorate: true
-    extra_refs:
-      - org: kyma-test-infra-dev
-        repo: test-infra
-        base_ref: master
-        path_alias: github.com/kyma-project/test-infra
-      - org: kyma-test-infra-dev
-        repo: kyma
-        base_ref: master
-        path_alias: github.com/kyma-project/kyma
-    spec:
-      volumes:
-        - name: upgrade-sa-stability-fluentd-s
-          secret:
-            secretName: upgrade-sa-stability-fluentd-s
-      containers:
-        - <<: *base_image
-          securityContext:
-            privileged: true
-          volumeMounts:
-            - name: upgrade-sa-stability-fluentd-s
-              mountPath: /etc/credentials/sa-stability-fluentd-storage-writer
-              readOnly: true
-          command:
-            - "bash"
-          env:
-            - <<: *cluster_version_k15
-            - name: MACHINE_TYPE
-              value: "custom-8-15360"
-            - name: PROVISION_REGIONAL_CLUSTER
-              value: "true"
-            - name: NODES_PER_ZONE
-              value: "1"
-            - name: STACKDRIVER_COLLECTOR_SIDECAR_IMAGE_TAG
-              value: "0.6.4"
-            - name: INPUT_CLUSTER_NAME
-              value: "nightly"
-            - name: TEST_RESULT_WINDOW_TIME
-              value: "6h"
-            - name: STABILITY_SLACK_CLIENT_CHANNEL_ID
-              value: "#c4core-prow-alerts"
-            - name: GITHUB_TEAMS_WITH_KYMA_ADMINS_RIGHTS
-              value: "cluster-access"
-            - name: KYMA_ALERTS_SLACK_API_URL
-              valueFrom:
-                secretKeyRef:
-                  name: kyma-alerts-slack-api-url
-                  key: secret
-            - name: KYMA_ALERTS_CHANNEL
-              value: "#c4core-prow-alerts"
-            - name: CLOUDSDK_COMPUTE_ZONE
-              value: "europe-west4-b"
-          args:
-            - "-c"
-            - "${KYMA_PROJECT_DIR}/test-infra/prow/scripts/cluster-integration/kyma-gke-long-lasting.sh"
-          resources:
-            requests:
-              memory: 200Mi
-              cpu: 80m
+ # - name: kyma-gke-weekly
+ #   cron: "0 6 * * 1" # "At 06:00 on Monday."
+ #   annotations:
+ #     testgrid-dashboards: kyma-weekly
+ #     # testgrid-alert-email: email-here@sap.com
+ #     testgrid-num-failures-to-alert: '1'
+ #   labels:
+ #     preset-kyma-keyring: "true"
+ #     preset-kyma-encryption-key: "true"
+ #     preset-build-master: "true"
+ #     preset-stability-checker-slack-notifications: "true"
+ #     preset-weekly-github-integration: "true"
+ #     preset-kms-gc-project-env: "true"
+ #     <<: *gke_job_labels_template
+ #   decorate: true
+ #   extra_refs:
+ #     - <<: *test_infra_ref
+ #       base_ref: master
+ #     - <<: *kyma_ref
+ #       base_ref: master
+ #   spec:
+ #     volumes:
+ #       - name: upgrade-sa-stability-fluentd-s
+ #         secret:
+ #           secretName: upgrade-sa-stability-fluentd-s
+ #     containers:
+ #       - <<: *base_image
+ #         securityContext:
+ #           privileged: true
+ #         volumeMounts:
+ #           - name: upgrade-sa-stability-fluentd-s
+ #             mountPath: /etc/credentials/sa-stability-fluentd-storage-writer
+ #             readOnly: true
+ #         command:
+ #           - "bash"
+ #         env:
+ #           - <<: *cluster_version_k15
+ #           - name: MACHINE_TYPE
+ #             value: "custom-12-15360"
+ #           - name: PROVISION_REGIONAL_CLUSTER
+ #             value: "true"
+ #           - name: NODES_PER_ZONE
+ #             value: "1"
+ #           - name: STACKDRIVER_COLLECTOR_SIDECAR_IMAGE_TAG
+ #             value: "0.6.4"
+ #           - name: INPUT_CLUSTER_NAME
+ #             value: "weekly"
+ #           - name: TEST_RESULT_WINDOW_TIME
+ #             value: "24h"
+ #           - name: STABILITY_SLACK_CLIENT_CHANNEL_ID
+ #             value: "#c4core-prow-alerts"
+ #           - name: GITHUB_TEAMS_WITH_KYMA_ADMINS_RIGHTS
+ #             value: "cluster-access"
+ #           - name: KYMA_ALERTS_SLACK_API_URL
+ #             valueFrom:
+ #               secretKeyRef:
+ #                 name: kyma-alerts-slack-api-url
+ #                 key: secret
+ #           - name: KYMA_ALERTS_CHANNEL
+ #             value: "#c4core-prow-alerts"
+ #           - name: CLOUDSDK_COMPUTE_ZONE
+ #             value: "europe-west4-b"
+ #         args:
+ #           - "-c"
+ #           - "${KYMA_PROJECT_DIR}/test-infra/prow/scripts/cluster-integration/kyma-gke-long-lasting.sh"
+ #         resources:
+ #           requests:
+ #             memory: 200Mi
+ #             cpu: 80#m
 
-  - name: kyma-gke-weekly
-    cron: "0 6 * * 1" # "At 06:00 on Monday."
-    annotations:
-      testgrid-dashboards: kyma-weekly
-      # testgrid-alert-email: email-here@sap.com
-      testgrid-num-failures-to-alert: '1'
-    labels:
-      preset-kyma-keyring: "true"
-      preset-kyma-encryption-key: "true"
-      preset-build-master: "true"
-      preset-stability-checker-slack-notifications: "true"
-      preset-weekly-github-integration: "true"
-      preset-kms-gc-project-env: "true"
-      <<: *gke_job_labels_template
-    decorate: true
-    extra_refs:
-      - <<: *test_infra_ref
-        base_ref: master
-      - <<: *kyma_ref
-        base_ref: master
-    spec:
-      volumes:
-        - name: upgrade-sa-stability-fluentd-s
-          secret:
-            secretName: upgrade-sa-stability-fluentd-s
-      containers:
-        - <<: *base_image
-          securityContext:
-            privileged: true
-          volumeMounts:
-            - name: upgrade-sa-stability-fluentd-s
-              mountPath: /etc/credentials/sa-stability-fluentd-storage-writer
-              readOnly: true
-          command:
-            - "bash"
-          env:
-            - <<: *cluster_version_k15
-            - name: MACHINE_TYPE
-              value: "custom-12-15360"
-            - name: PROVISION_REGIONAL_CLUSTER
-              value: "true"
-            - name: NODES_PER_ZONE
-              value: "1"
-            - name: STACKDRIVER_COLLECTOR_SIDECAR_IMAGE_TAG
-              value: "0.6.4"
-            - name: INPUT_CLUSTER_NAME
-              value: "weekly"
-            - name: TEST_RESULT_WINDOW_TIME
-              value: "24h"
-            - name: STABILITY_SLACK_CLIENT_CHANNEL_ID
-              value: "#c4core-prow-alerts"
-            - name: GITHUB_TEAMS_WITH_KYMA_ADMINS_RIGHTS
-              value: "cluster-access"
-            - name: KYMA_ALERTS_SLACK_API_URL
-              valueFrom:
-                secretKeyRef:
-                  name: kyma-alerts-slack-api-url
-                  key: secret
-            - name: KYMA_ALERTS_CHANNEL
-              value: "#c4core-prow-alerts"
-            - name: CLOUDSDK_COMPUTE_ZONE
-              value: "europe-west4-b"
-          args:
-            - "-c"
-            - "${KYMA_PROJECT_DIR}/test-infra/prow/scripts/cluster-integration/kyma-gke-long-lasting.sh"
-          resources:
-            requests:
-              memory: 200Mi
-              cpu: 80m
+ # - name: kyma-aks-nightly
+ #   cron: "0 4 * * 1-5" # "At 04:00 on every day-of-week from Monday through Friday"
+ #   annotations:
+ #     testgrid-dashboards: kyma-nightly
+ #     # testgrid-alert-email: email-here@sap.com
+ #     testgrid-num-failures-to-alert: '1'
+ #   labels:
+ #     preset-kyma-keyring: "true"
+ #     preset-kyma-encryption-key: "true"
+ #     preset-build-master: "true"
+ #     preset-stability-checker-slack-notifications: "true"
+ #     preset-nightly-aks-github-integration: "true"
+ #     preset-creds-aks-kyma-integration: "true"
+ #     preset-kms-gc-project-env: "true"
+ #     <<: *gke_job_labels_template
+ #   decorate: true
+ #   extra_refs:
+ #     - <<: *test_infra_ref
+ #       base_ref: master
+ #     - <<: *kyma_ref
+ #       base_ref: master
+ #   spec:
+ #     volumes:
+ #       - name: upgrade-sa-stability-fluentd-s
+ #         secret:
+ #           secretName: upgrade-sa-stability-fluentd-s
+ #     containers:
+ #       - <<: *base_image
+ #         securityContext:
+ #           privileged: true
+ #         volumeMounts:
+ #           - name: upgrade-sa-stability-fluentd-s
+ #             mountPath: /etc/credentials/sa-stability-fluentd-storage-writer
+ #             readOnly: true
+ #         env:
+ #           - <<: *cluster_version_k15
+ #           - name: RS_GROUP
+ #             value: "kyma-nightly-aks"
+ #           - name: REGION
+ #             value: "northeurope"
+ #           - name: INPUT_CLUSTER_NAME
+ #             value: "nightly-aks"
+ #           - name: TEST_RESULT_WINDOW_TIME
+ #             value: "6h"
+ #           - name: STABILITY_SLACK_CLIENT_CHANNEL_ID
+ #             value: "#c4core-prow-alerts"
+ #           - name: GITHUB_TEAMS_WITH_KYMA_ADMINS_RIGHTS
+ #             value: "cluster-access"
+ #           - name: KYMA_ALERTS_SLACK_API_URL
+ #             valueFrom:
+ #               secretKeyRef:
+ #                 name: kyma-alerts-slack-api-url
+ #                 key: secret
+ #           - name: KYMA_ALERTS_CHANNEL
+ #             value: "#c4core-prow-alerts"
+ #         command:
+ #           - "bash"
+ #         args:
+ #           - "-c"
+ #           - "${KYMA_PROJECT_DIR}/test-infra/prow/scripts/cluster-integration/kyma-aks-long-lasting.sh"
+ #         resources:
+ #           requests:
+ #             memory: 200Mi
+ #             cpu: 80#m
 
-  - name: kyma-aks-nightly
-    cron: "0 4 * * 1-5" # "At 04:00 on every day-of-week from Monday through Friday"
-    annotations:
-      testgrid-dashboards: kyma-nightly
-      # testgrid-alert-email: email-here@sap.com
-      testgrid-num-failures-to-alert: '1'
-    labels:
-      preset-kyma-keyring: "true"
-      preset-kyma-encryption-key: "true"
-      preset-build-master: "true"
-      preset-stability-checker-slack-notifications: "true"
-      preset-nightly-aks-github-integration: "true"
-      preset-creds-aks-kyma-integration: "true"
-      preset-kms-gc-project-env: "true"
-      <<: *gke_job_labels_template
-    decorate: true
-    extra_refs:
-      - <<: *test_infra_ref
-        base_ref: master
-      - <<: *kyma_ref
-        base_ref: master
-    spec:
-      volumes:
-        - name: upgrade-sa-stability-fluentd-s
-          secret:
-            secretName: upgrade-sa-stability-fluentd-s
-      containers:
-        - <<: *base_image
-          securityContext:
-            privileged: true
-          volumeMounts:
-            - name: upgrade-sa-stability-fluentd-s
-              mountPath: /etc/credentials/sa-stability-fluentd-storage-writer
-              readOnly: true
-          env:
-            - <<: *cluster_version_k15
-            - name: RS_GROUP
-              value: "kyma-nightly-aks"
-            - name: REGION
-              value: "northeurope"
-            - name: INPUT_CLUSTER_NAME
-              value: "nightly-aks"
-            - name: TEST_RESULT_WINDOW_TIME
-              value: "6h"
-            - name: STABILITY_SLACK_CLIENT_CHANNEL_ID
-              value: "#c4core-prow-alerts"
-            - name: GITHUB_TEAMS_WITH_KYMA_ADMINS_RIGHTS
-              value: "cluster-access"
-            - name: KYMA_ALERTS_SLACK_API_URL
-              valueFrom:
-                secretKeyRef:
-                  name: kyma-alerts-slack-api-url
-                  key: secret
-            - name: KYMA_ALERTS_CHANNEL
-              value: "#c4core-prow-alerts"
-          command:
-            - "bash"
-          args:
-            - "-c"
-            - "${KYMA_PROJECT_DIR}/test-infra/prow/scripts/cluster-integration/kyma-aks-long-lasting.sh"
-          resources:
-            requests:
-              memory: 200Mi
-              cpu: 80m
-
-  - name: kyma-gke-backup-nightly
-    cron: "0 5 * * 1-5" # "At 05:00 on every day-of-week from Monday through Friday."
-    labels:
-      preset-build-master: "true"
-      <<: *gke_backup_job_labels_template
-    decorate: true
-    extra_refs:
-      - org: kyma-test-infra-dev
-        repo: test-infra
-        base_ref: master
-        path_alias: github.com/kyma-project/test-infra
-      - <<: *kyma_ref
-        base_ref: master
-    spec:
-      containers:
-        - <<: *base_image
-          securityContext:
-            privileged: true
-          command:
-            - "bash"
-          env:
-            - <<: *cluster_version_k15
-            - name: CLOUDSDK_COMPUTE_ZONE
-              value: "europe-west4-a"
-            - name: REPO_OWNER
-              value: "kyma-project"
-            - name: REPO_NAME
-              value: "kyma"
-          args:
-            - "-c"
-            - "${KYMA_PROJECT_DIR}/test-infra/prow/scripts/cluster-integration/kyma-gke-backup-test.sh"
-          resources:
-            requests:
-              memory: 200Mi
-              cpu: 80m
+ # - name: kyma-gke-backup-nightly
+ #   cron: "0 5 * * 1-5" # "At 05:00 on every day-of-week from Monday through Friday."
+ #   labels:
+ #     preset-build-master: "true"
+ #     <<: *gke_backup_job_labels_template
+ #   decorate: true
+ #   extra_refs:
+ #     - org: kyma-test-infra-dev
+ #       repo: test-infra
+ #       base_ref: master
+ #       path_alias: github.com/kyma-project/test-infra
+ #     - <<: *kyma_ref
+ #       base_ref: master
+ #   spec:
+ #     containers:
+ #       - <<: *base_image
+ #         securityContext:
+ #           privileged: true
+ #         command:
+ #           - "bash"
+ #         env:
+ #           - <<: *cluster_version_k15
+ #           - name: CLOUDSDK_COMPUTE_ZONE
+ #             value: "europe-west4-a"
+ #           - name: REPO_OWNER
+ #             value: "kyma-project"
+ #           - name: REPO_NAME
+ #             value: "kyma"
+ #         args:
+ #           - "-c"
+ #           - "${KYMA_PROJECT_DIR}/test-infra/prow/scripts/cluster-integration/kyma-gke-backup-test.sh"
+ #         resources:
+ #           requests:
+ #             memory: 200Mi
+ #             cpu: 80#m
