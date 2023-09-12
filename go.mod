@@ -13,7 +13,7 @@ require (
 	github.com/Masterminds/semver v1.5.0
 	github.com/Masterminds/sprig v2.22.0+incompatible
 	github.com/cloudevents/sdk-go/v2 v2.14.0
-	github.com/containerd/containerd v1.7.4
+	github.com/containerd/containerd v1.7.6
 	github.com/containerd/typeurl/v2 v2.1.1
 	github.com/forestgiant/sliceutil v0.0.0-20160425183142-94783f95db6c
 	github.com/fsouza/go-dockerclient v1.9.8
@@ -63,7 +63,7 @@ require (
 	github.com/GoogleCloudPlatform/testgrid v0.0.123 // indirect
 	github.com/Masterminds/goutils v1.1.1 // indirect
 	github.com/Microsoft/go-winio v0.6.1 // indirect
-	github.com/Microsoft/hcsshim v0.10.0-rc.8 // indirect
+	github.com/Microsoft/hcsshim v0.11.0 // indirect
 	github.com/andybalholm/brotli v1.0.4 // indirect
 	github.com/andygrunwald/go-jira v1.14.0 // indirect
 	github.com/apache/arrow/go/v12 v12.0.0 // indirect
@@ -78,7 +78,7 @@ require (
 	github.com/charmbracelet/lipgloss v0.5.0 // indirect
 	github.com/clarketm/json v1.13.4 // indirect
 	github.com/containerd/cgroups v1.1.0 // indirect
-	github.com/containerd/continuity v0.4.2-0.20230616210509-1e0d26eb2381 // indirect
+	github.com/containerd/continuity v0.4.2 // indirect
 	github.com/containerd/fifo v1.1.0 // indirect
 	github.com/containerd/stargz-snapshotter/estargz v0.14.3 // indirect
 	github.com/containerd/ttrpc v1.2.2 // indirect
